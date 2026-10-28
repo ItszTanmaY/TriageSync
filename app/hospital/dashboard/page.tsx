@@ -226,37 +226,37 @@ export default function HospitalDashboardPage() {
   return (
     <div className="space-y-10 py-2">
       {/* Top Header: Switcher & Telemetry Banner */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-white/[0.08] pb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-slate-200 pb-6">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs uppercase tracking-widest text-zinc-400">
+            <span className="font-mono text-xs uppercase tracking-widest text-sky-700 font-bold">
               FACILITY COMMAND CONSOLE
             </span>
-            <span className="font-mono text-[10px] uppercase text-zinc-400 px-2 py-0.5 rounded border border-white/10">
+            <span className="font-mono text-[10px] uppercase text-slate-700 font-bold px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
               LEVEL {hospital?.level || 2}
             </span>
           </div>
-          <h1 className="text-3xl font-normal text-white tracking-tight">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
             {hospital?.name || 'Loading Facility...'}
           </h1>
-          <p className="font-mono text-xs text-zinc-500">
+          <p className="font-mono text-xs text-slate-500 font-medium">
             {hospital?.phone} • {hospital?.specialties.join(' / ').toUpperCase()}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
           <div className="space-y-1">
-            <label htmlFor="facility-select" className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 block">
+            <label htmlFor="facility-select" className="font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold block">
               Facility Node
             </label>
             <select
               id="facility-select"
               value={selectedHospitalId}
               onChange={(e) => setSelectedHospitalId(e.target.value)}
-              className="touch-target px-3 py-2 bg-zinc-950 border border-white/15 rounded-xl font-mono text-xs text-white focus:outline-none focus:border-white/40 cursor-pointer min-w-[220px]"
+              className="touch-target px-3 py-2 bg-white border border-slate-300 rounded-xl font-mono text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500 cursor-pointer min-w-[220px]"
             >
               {MOCK_HOSPITALS.map((h) => (
-                <option key={h.id} value={h.id} className="bg-zinc-950 text-white">
+                <option key={h.id} value={h.id} className="bg-white text-slate-900">
                   {h.name} {h.id === 'hosp-003' ? '(ICU FULL)' : h.id === 'hosp-004' ? '(NO TRAUMA)' : h.id === 'hosp-005' ? '(NO O-)' : ''}
                 </option>
               ))}
@@ -264,64 +264,64 @@ export default function HospitalDashboardPage() {
           </div>
 
           <div className="space-y-1">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 block">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold block">
               Freshness
             </span>
-            <div className="touch-target px-4 py-2 rounded-xl bg-zinc-950 border border-white/15 font-mono text-xs text-zinc-300 flex items-center gap-2">
+            <div className="touch-target px-4 py-2 rounded-xl bg-white border border-slate-300 font-mono text-xs text-slate-700 flex items-center gap-2">
               <span
                 className={`telemetry-pip ${
                   freshness.tier === 'fresh'
-                    ? 'bg-[#00E599]'
+                    ? 'bg-emerald-500'
                     : freshness.tier === 'stale_warning'
-                    ? 'bg-[#FFB020]'
-                    : 'bg-[#FF2A44] animate-pulse'
+                    ? 'bg-amber-500'
+                    : 'bg-red-500 animate-pulse'
                 }`}
               />
-              <span>{freshness.label.toUpperCase()}</span>
+              <span className="font-bold">{freshness.label.toUpperCase()}</span>
             </div>
           </div>
         </div>
       </div>
 
       {isLoading ? (
-        <div className="py-24 text-center font-mono text-xs text-zinc-500 uppercase tracking-widest">
+        <div className="py-24 text-center font-mono text-xs text-slate-500 uppercase tracking-widest">
           Connecting to facility telemetry grid...
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             {/* 1. Bed Steppers */}
-            <div className="p-6 rounded-2xl tactile-panel space-y-6">
-              <div className="font-mono text-xs uppercase tracking-widest text-zinc-400 border-b border-white/[0.08] pb-3">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-6">
+              <div className="font-mono text-xs uppercase tracking-widest text-slate-700 font-bold border-b border-slate-200 pb-3">
                 Live Capacity Steppers (1-Tap &ge; 48px)
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* ICU Beds */}
-                <div className="p-5 rounded-xl bg-black/40 border border-white/[0.08] space-y-3">
+                <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between font-mono text-xs">
-                    <span className="text-zinc-400 uppercase">ICU Free Beds</span>
+                    <span className="text-slate-700 font-bold uppercase">ICU Free Beds</span>
                     {resources?.icu_free === 0 ? (
-                      <span className="text-[10px] text-[#FF2A44] border border-[#FF2A44]/40 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] text-red-600 bg-red-100 border border-red-300 px-1.5 py-0.5 rounded font-bold">
                         100% FULL
                       </span>
                     ) : (
-                      <span className="text-zinc-500">Cap: {resources?.icu_total || 20}</span>
+                      <span className="text-slate-500 font-medium">Cap: {resources?.icu_total || 20}</span>
                     )}
                   </div>
                   <div className="flex items-center justify-between pt-1">
                     <button
                       type="button"
                       onClick={() => updateResourceField('icu_free', -1)}
-                      className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
+                      className="touch-target w-12 h-12 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-900 flex items-center justify-center font-mono text-lg font-bold"
                     >
                       -
                     </button>
-                    <span className="font-mono text-4xl font-light text-white">{resources?.icu_free ?? 0}</span>
+                    <span className="font-mono text-4xl font-black text-slate-900">{resources?.icu_free ?? 0}</span>
                     <button
                       type="button"
                       onClick={() => updateResourceField('icu_free', 1)}
-                      className="touch-target w-12 h-12 rounded-lg bg-white text-black hover:bg-zinc-200 flex items-center justify-center font-mono text-lg font-bold"
+                      className="touch-target w-12 h-12 rounded-lg bg-sky-600 text-white hover:bg-sky-700 flex items-center justify-center font-mono text-lg font-bold shadow-sm"
                     >
                       +
                     </button>
@@ -329,24 +329,24 @@ export default function HospitalDashboardPage() {
                 </div>
 
                 {/* ER Beds */}
-                <div className="p-5 rounded-xl bg-black/40 border border-white/[0.08] space-y-3">
+                <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between font-mono text-xs">
-                    <span className="text-zinc-400 uppercase">Emergency Beds</span>
-                    <span className="text-zinc-500">Cap: {resources?.er_total || 25}</span>
+                    <span className="text-slate-700 font-bold uppercase">Emergency Beds</span>
+                    <span className="text-slate-500 font-medium">Cap: {resources?.er_total || 25}</span>
                   </div>
                   <div className="flex items-center justify-between pt-1">
                     <button
                       type="button"
                       onClick={() => updateResourceField('er_free', -1)}
-                      className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
+                      className="touch-target w-12 h-12 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-900 flex items-center justify-center font-mono text-lg font-bold"
                     >
                       -
                     </button>
-                    <span className="font-mono text-4xl font-light text-white">{resources?.er_free ?? 0}</span>
+                    <span className="font-mono text-4xl font-black text-slate-900">{resources?.er_free ?? 0}</span>
                     <button
                       type="button"
                       onClick={() => updateResourceField('er_free', 1)}
-                      className="touch-target w-12 h-12 rounded-lg bg-white text-black hover:bg-zinc-200 flex items-center justify-center font-mono text-lg font-bold"
+                      className="touch-target w-12 h-12 rounded-lg bg-sky-600 text-white hover:bg-sky-700 flex items-center justify-center font-mono text-lg font-bold shadow-sm"
                     >
                       +
                     </button>
@@ -354,11 +354,11 @@ export default function HospitalDashboardPage() {
                 </div>
 
                 {/* Trauma Bays */}
-                <div className="p-5 rounded-xl bg-black/40 border border-white/[0.08] space-y-3">
+                <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between font-mono text-xs">
-                    <span className="text-zinc-400 uppercase">Trauma Bays Available</span>
+                    <span className="text-slate-700 font-bold uppercase">Trauma Bays Available</span>
                     {resources?.trauma_bay_free === 0 && (
-                      <span className="text-[10px] text-[#FF2A44] border border-[#FF2A44]/40 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] text-red-600 bg-red-100 border border-red-300 px-1.5 py-0.5 rounded font-bold">
                         NONE
                       </span>
                     )}
@@ -367,15 +367,15 @@ export default function HospitalDashboardPage() {
                     <button
                       type="button"
                       onClick={() => updateResourceField('trauma_bay_free', -1)}
-                      className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
+                      className="touch-target w-12 h-12 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-900 flex items-center justify-center font-mono text-lg font-bold"
                     >
                       -
                     </button>
-                    <span className="font-mono text-4xl font-light text-white">{resources?.trauma_bay_free ?? 0}</span>
+                    <span className="font-mono text-4xl font-black text-slate-900">{resources?.trauma_bay_free ?? 0}</span>
                     <button
                       type="button"
                       onClick={() => updateResourceField('trauma_bay_free', 1)}
-                      className="touch-target w-12 h-12 rounded-lg bg-white text-black hover:bg-zinc-200 flex items-center justify-center font-mono text-lg font-bold"
+                      className="touch-target w-12 h-12 rounded-lg bg-sky-600 text-white hover:bg-sky-700 flex items-center justify-center font-mono text-lg font-bold shadow-sm"
                     >
                       +
                     </button>
@@ -383,24 +383,24 @@ export default function HospitalDashboardPage() {
                 </div>
 
                 {/* Ventilators */}
-                <div className="p-5 rounded-xl bg-black/40 border border-white/[0.08] space-y-3">
+                <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between font-mono text-xs">
-                    <span className="text-zinc-400 uppercase">Ventilators Free</span>
-                    <span className="text-zinc-500">Airway Support</span>
+                    <span className="text-slate-700 font-bold uppercase">Ventilators Free</span>
+                    <span className="text-slate-500 font-medium">Airway Support</span>
                   </div>
                   <div className="flex items-center justify-between pt-1">
                     <button
                       type="button"
                       onClick={() => updateResourceField('ventilators_free', -1)}
-                      className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
+                      className="touch-target w-12 h-12 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-900 flex items-center justify-center font-mono text-lg font-bold"
                     >
                       -
                     </button>
-                    <span className="font-mono text-4xl font-light text-white">{resources?.ventilators_free ?? 0}</span>
+                    <span className="font-mono text-4xl font-black text-slate-900">{resources?.ventilators_free ?? 0}</span>
                     <button
                       type="button"
                       onClick={() => updateResourceField('ventilators_free', 1)}
-                      className="touch-target w-12 h-12 rounded-lg bg-white text-black hover:bg-zinc-200 flex items-center justify-center font-mono text-lg font-bold"
+                      className="touch-target w-12 h-12 rounded-lg bg-sky-600 text-white hover:bg-sky-700 flex items-center justify-center font-mono text-lg font-bold shadow-sm"
                     >
                       +
                     </button>
@@ -410,8 +410,8 @@ export default function HospitalDashboardPage() {
             </div>
 
             {/* 2. Equipment Switches */}
-            <div className="p-6 rounded-2xl tactile-panel space-y-4">
-              <div className="font-mono text-xs uppercase tracking-widest text-zinc-400 border-b border-white/[0.08] pb-3">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <div className="font-mono text-xs uppercase tracking-widest text-slate-700 font-bold border-b border-slate-200 pb-3">
                 Operational Unit Toggles
               </div>
 
@@ -429,15 +429,17 @@ export default function HospitalDashboardPage() {
                       onClick={() => toggleEquipment(key)}
                       className={`touch-target p-4 rounded-xl border text-left flex items-center justify-between transition-all ${
                         isActive
-                          ? 'bg-zinc-900 border-white/30 text-white'
-                          : 'bg-black/40 border-white/[0.06] text-zinc-600'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-bold shadow-sm'
+                          : 'bg-slate-50 border-slate-200 text-slate-500'
                       }`}
                     >
                       <div>
                         <div className="font-mono text-xs">{label}</div>
-                        <div className="font-mono text-[10px] text-zinc-500 mt-0.5">{status}</div>
+                        <div className={`font-mono text-[10px] mt-0.5 ${isActive ? 'text-emerald-700 font-bold' : 'text-slate-400'}`}>
+                          {status}
+                        </div>
                       </div>
-                      <span className={`telemetry-pip ${isActive ? 'bg-[#00E599]' : 'bg-zinc-700'}`} />
+                      <span className={`telemetry-pip ${isActive ? 'bg-emerald-500 shadow-sm' : 'bg-slate-300'}`} />
                     </button>
                   );
                 })}
@@ -445,8 +447,8 @@ export default function HospitalDashboardPage() {
             </div>
 
             {/* 3. On-Call Specialists */}
-            <div className="p-6 rounded-2xl tactile-panel space-y-4">
-              <div className="font-mono text-xs uppercase tracking-widest text-zinc-400 border-b border-white/[0.08] pb-3">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <div className="font-mono text-xs uppercase tracking-widest text-slate-700 font-bold border-b border-slate-200 pb-3">
                 On-Call Surgical & Specialist Teams
               </div>
 
@@ -465,14 +467,14 @@ export default function HospitalDashboardPage() {
                       key={key}
                       type="button"
                       onClick={() => toggleOnCallSpecialist(key)}
-                      className={`touch-target p-3 rounded-lg border font-mono text-xs flex items-center justify-between transition-all ${
+                      className={`touch-target p-3 rounded-xl border font-mono text-xs flex items-center justify-between transition-all ${
                         isOnCall
-                          ? 'bg-zinc-900 border-white/20 text-white'
-                          : 'bg-black/40 border-white/[0.06] text-zinc-600'
+                          ? 'bg-sky-50 border-sky-300 text-sky-950 font-bold shadow-sm'
+                          : 'bg-slate-50 border-slate-200 text-slate-500'
                       }`}
                     >
                       <span>{label}</span>
-                      <span className={`telemetry-pip ${isOnCall ? 'bg-white' : 'bg-zinc-800'}`} />
+                      <span className={`telemetry-pip ${isOnCall ? 'bg-sky-600' : 'bg-slate-300'}`} />
                     </button>
                   );
                 })}
@@ -480,8 +482,8 @@ export default function HospitalDashboardPage() {
             </div>
 
             {/* 4. Blood Stock Steppers (8 Groups) */}
-            <div className="p-6 rounded-2xl tactile-panel space-y-4">
-              <div className="font-mono text-xs uppercase tracking-widest text-zinc-400 border-b border-white/[0.08] pb-3">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <div className="font-mono text-xs uppercase tracking-widest text-slate-700 font-bold border-b border-slate-200 pb-3">
                 Blood Inventory (Units Per Group)
               </div>
 
@@ -496,31 +498,35 @@ export default function HospitalDashboardPage() {
                       key={group}
                       className={`p-3 rounded-xl border flex flex-col justify-between ${
                         isZero
-                          ? 'bg-[#FF2A44]/10 border-[#FF2A44]/40'
-                          : 'bg-black/40 border-white/[0.08]'
+                          ? 'bg-red-50 border-red-300'
+                          : 'bg-slate-50 border-slate-200'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-mono text-sm font-semibold text-white">{group}</span>
+                        <span className={`font-mono text-sm font-bold ${isZero ? 'text-red-700' : 'text-slate-900'}`}>
+                          {group}
+                        </span>
                         {isZero ? (
-                          <span className="font-mono text-[9px] text-[#FF2A44] uppercase">0 Units</span>
+                          <span className="font-mono text-[9px] text-red-600 bg-red-100 px-1 py-0.5 rounded font-bold uppercase">
+                            0 Units
+                          </span>
                         ) : (
-                          <span className="font-mono text-xs text-zinc-500">{units}u</span>
+                          <span className="font-mono text-xs text-slate-600 font-bold">{units}u</span>
                         )}
                       </div>
                       <div className="flex items-center justify-between">
                         <button
                           type="button"
                           onClick={() => updateBloodStockUnits(group, -1)}
-                          className="touch-target w-9 h-9 rounded-md bg-zinc-900 border border-white/10 hover:border-white/20 text-white flex items-center justify-center font-mono"
+                          className="touch-target w-9 h-9 rounded-md bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 flex items-center justify-center font-mono font-bold"
                         >
                           -
                         </button>
-                        <span className="font-mono text-lg text-white">{units}</span>
+                        <span className="font-mono text-lg font-black text-slate-900">{units}</span>
                         <button
                           type="button"
                           onClick={() => updateBloodStockUnits(group, 1)}
-                          className="touch-target w-9 h-9 rounded-md bg-white text-black hover:bg-zinc-200 flex items-center justify-center font-mono font-bold"
+                          className="touch-target w-9 h-9 rounded-md bg-sky-600 text-white hover:bg-sky-700 flex items-center justify-center font-mono font-bold"
                         >
                           +
                         </button>
@@ -534,13 +540,13 @@ export default function HospitalDashboardPage() {
 
           {/* Right Column: Inbound Radar & Action Checklist */}
           <div className="space-y-6">
-            <div className="p-6 rounded-2xl tactile-panel space-y-6 sticky top-20">
-              <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-6 sticky top-24">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-4">
                 <div>
-                  <span className="font-mono text-xs uppercase tracking-widest text-zinc-400 block">
+                  <span className="font-mono text-xs uppercase tracking-widest text-slate-700 font-bold block">
                     Incoming ER Telemetry
                   </span>
-                  <span className="text-[10px] text-zinc-500 font-mono">
+                  <span className="text-[10px] text-slate-500 font-mono">
                     Real-time SBAR Voice & Resource Sync
                   </span>
                 </div>
@@ -548,12 +554,12 @@ export default function HospitalDashboardPage() {
                   <button
                     type="button"
                     onClick={playRedInboundChime}
-                    className="touch-target px-2.5 py-1 rounded bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 text-[10px] font-mono flex items-center gap-1 active:scale-95 transition-all"
+                    className="touch-target px-2.5 py-1 rounded bg-rose-50 border border-rose-300 text-rose-700 hover:bg-rose-100 text-[10px] font-mono font-bold flex items-center gap-1 active:scale-95 transition-all shadow-sm"
                     title="Test audible chime for incoming RED patient (HD-4)"
                   >
                     <span>🔔 {audioChimePlayed ? 'Re-chime' : 'Test RED Chime'}</span>
                   </button>
-                  <span className="font-mono text-[10px] text-[#00E599] uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                  <span className="font-mono text-[10px] text-emerald-800 uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 font-bold">
                     {incomingPatients.length} Inbound
                   </span>
                 </div>
@@ -561,10 +567,10 @@ export default function HospitalDashboardPage() {
 
               {incomingPatients.length === 0 ? (
                 <div className="py-16 text-center space-y-2">
-                  <div className="font-mono text-xs uppercase tracking-widest text-zinc-500">
+                  <div className="font-mono text-xs uppercase tracking-widest text-slate-400 font-bold">
                     Radar Standby
                   </div>
-                  <p className="text-xs text-zinc-600 max-w-xs mx-auto">
+                  <p className="text-xs text-slate-500 max-w-xs mx-auto">
                     Awaiting ambulance routing broadcasts and SBAR hands-free audio transmissions.
                   </p>
                 </div>
@@ -578,43 +584,43 @@ export default function HospitalDashboardPage() {
                     return (
                       <div
                         key={patient.id}
-                        className="p-5 rounded-xl border border-rose-500/30 bg-gradient-to-b from-rose-950/20 via-zinc-950/80 to-zinc-950 space-y-4 shadow-xl"
+                        className="p-5 rounded-2xl border border-red-200 bg-gradient-to-b from-red-50/50 via-white to-white space-y-4 shadow-md"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span className="telemetry-pip bg-[#FF2A44] shadow-[0_0_8px_#FF2A44] animate-ping" />
-                            <span className="font-mono text-xs font-semibold text-rose-400 uppercase tracking-wider">
+                            <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
+                            <span className="font-mono text-xs font-bold text-red-700 uppercase tracking-wider">
                               CRITICAL RED PRIORITY
                             </span>
                           </div>
-                          <span className="font-mono text-xs text-white bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30">
+                          <span className="font-mono text-xs text-red-800 bg-red-100 px-2 py-0.5 rounded border border-red-200 font-bold">
                             ETA {patient.eta_min ?? 8} MIN
                           </span>
                         </div>
 
-                        <div className="text-xs text-zinc-200 font-medium">
+                        <div className="text-xs text-slate-800 font-bold">
                           {handover?.structured?.age ? `${handover.structured.age}Y` : ''}{' '}
                           {handover?.structured?.sex || 'Unknown'} —{' '}
-                          <span className="text-cyan-400">{handover?.structured?.mechanism || 'Emergency Trauma Evaluation'}</span>
+                          <span className="text-sky-700">{handover?.structured?.mechanism || 'Emergency Trauma Evaluation'}</span>
                         </div>
 
                         {handover?.structured?.vitals && (
-                          <div className="grid grid-cols-4 gap-2 p-2.5 rounded-lg bg-black/60 border border-white/[0.08] font-mono text-center text-xs">
+                          <div className="grid grid-cols-4 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono text-center text-xs">
                             <div>
-                              <span className="text-[9px] text-zinc-500 block">HR</span>
-                              <span className="text-rose-400 font-bold">{handover.structured.vitals.hr ?? '--'}</span>
+                              <span className="text-[9px] text-slate-500 block font-bold">HR</span>
+                              <span className="text-red-600 font-black">{handover.structured.vitals.hr ?? '--'}</span>
                             </div>
                             <div>
-                              <span className="text-[9px] text-zinc-500 block">BP</span>
-                              <span className="text-amber-400 font-bold">{handover.structured.vitals.bp ?? '--'}</span>
+                              <span className="text-[9px] text-slate-500 block font-bold">BP</span>
+                              <span className="text-amber-600 font-black">{handover.structured.vitals.bp ?? '--'}</span>
                             </div>
                             <div>
-                              <span className="text-[9px] text-zinc-500 block">SPO2</span>
-                              <span className="text-cyan-400 font-bold">{handover.structured.vitals.spo2 ?? '--'}%</span>
+                              <span className="text-[9px] text-slate-500 block font-bold">SPO2</span>
+                              <span className="text-sky-600 font-black">{handover.structured.vitals.spo2 ?? '--'}%</span>
                             </div>
                             <div>
-                              <span className="text-[9px] text-zinc-500 block">GCS</span>
-                              <span className="text-purple-400 font-bold">{handover.structured.vitals.gcs ?? '--'}</span>
+                              <span className="text-[9px] text-slate-500 block font-bold">GCS</span>
+                              <span className="text-purple-600 font-black">{handover.structured.vitals.gcs ?? '--'}</span>
                             </div>
                           </div>
                         )}
@@ -625,7 +631,7 @@ export default function HospitalDashboardPage() {
                             {handover.structured.injuries.map((inj, idx) => (
                               <span
                                 key={idx}
-                                className="text-[10px] px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20 font-mono"
+                                className="text-[10px] px-2 py-0.5 rounded-lg bg-red-50 text-red-700 border border-red-200 font-mono font-bold"
                               >
                                 {inj}
                               </span>
@@ -634,30 +640,30 @@ export default function HospitalDashboardPage() {
                         )}
 
                         {/* Generated Pre-Arrival Action Checklist (VH-5) */}
-                        <div className="p-3.5 rounded-lg bg-zinc-900 border border-cyan-500/20 space-y-2 font-mono text-xs">
-                          <span className="text-[10px] text-cyan-400 uppercase tracking-wider block font-bold">
+                        <div className="p-3.5 rounded-xl bg-sky-50/70 border border-sky-200 space-y-2 font-mono text-xs">
+                          <span className="text-[10px] text-sky-800 uppercase tracking-wider block font-bold">
                             Pre-Arrival Action Checklist (Automated)
                           </span>
-                          <ul className="space-y-1.5 text-zinc-300">
+                          <ul className="space-y-1.5 text-slate-700">
                             {checklistItems.length > 0 ? (
                               checklistItems.map((item) => (
                                 <li key={item.id} className="flex items-start gap-1.5 text-[11px]">
-                                  <span className="text-cyan-400 font-bold">✓</span>
+                                  <span className="text-sky-600 font-black">✓</span>
                                   <span>{item.title}</span>
                                 </li>
                               ))
                             ) : (
                               <>
                                 <li className="flex items-start gap-1.5 text-[11px]">
-                                  <span className="text-cyan-400 font-bold">✓</span>
+                                  <span className="text-sky-600 font-black">✓</span>
                                   <span>Prepare 2 units O- blood in Trauma Bay</span>
                                 </li>
                                 <li className="flex items-start gap-1.5 text-[11px]">
-                                  <span className="text-cyan-400 font-bold">✓</span>
+                                  <span className="text-sky-600 font-black">✓</span>
                                   <span>Alert on-call Trauma Surgeon</span>
                                 </li>
                                 <li className="flex items-start gap-1.5 text-[11px]">
-                                  <span className="text-cyan-400 font-bold">✓</span>
+                                  <span className="text-sky-600 font-black">✓</span>
                                   <span>Hold OR-1 on immediate standby</span>
                                 </li>
                               </>
@@ -665,9 +671,9 @@ export default function HospitalDashboardPage() {
                           </ul>
                         </div>
 
-                        <div className="flex justify-between font-mono text-[10px] text-zinc-500 pt-1 border-t border-white/[0.06]">
+                        <div className="flex justify-between font-mono text-[10px] text-slate-500 pt-1 border-t border-slate-200">
                           <span>15-Min Bed Hold Active</span>
-                          <span className="text-[#00E599]">12:45 remaining</span>
+                          <span className="text-emerald-700 font-bold">12:45 remaining</span>
                         </div>
                       </div>
                     );
