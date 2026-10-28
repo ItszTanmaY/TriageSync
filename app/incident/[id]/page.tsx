@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import {
   Incident,
   Patient,
@@ -204,7 +205,13 @@ export default function ParamedicIncidentConsole() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-mono">
+          <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
+            <Link
+              href={`/incident/${incidentId}/handover`}
+              className="touch-target px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-lg shadow-cyan-500/20 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <span>🎙️ Voice Handover (SBAR)</span>
+            </Link>
             <div className="text-right">
               <div className="text-zinc-500 uppercase text-[10px]">Fleet Unit</div>
               <div className="text-white font-medium">{ambulance?.callsign || 'Apex-101'}</div>

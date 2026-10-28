@@ -10,6 +10,7 @@ import {
   HandoverRecord,
 } from '@/lib/types/database';
 import { calculateFreshnessStatus } from '@/lib/hospital/resources';
+import { generatePreArrivalChecklist } from '@/lib/voice/parser';
 
 export default function HospitalDashboardPage() {
   const [selectedHospitalId, setSelectedHospitalId] = useState<string>('hosp-001');
@@ -18,7 +19,30 @@ export default function HospitalDashboardPage() {
   const [bloodStock, setBloodStock] = useState<BloodStockItem[]>([]);
   const [incomingPatients, setIncomingPatients] = useState<{ patient: Patient; handover?: HandoverRecord }[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [audioChimePlayed, setAudioChimePlayed] = useState<boolean>(false);
   const [, startTransition] = useTransition();
+
+  const playRedInboundChime = () => {
+    if (typeof window === 'undefined') return;
+    try {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(1174.66, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.6);
+      setAudioChimePlayed(true);
+    } catch (e) {
+      console.warn('Audio chime error:', e);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -512,12 +536,27 @@ export default function HospitalDashboardPage() {
           <div className="space-y-6">
             <div className="p-6 rounded-2xl tactile-panel space-y-6 sticky top-20">
               <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-                <span className="font-mono text-xs uppercase tracking-widest text-zinc-400">
-                  Incoming ER Telemetry
-                </span>
-                <span className="font-mono text-[10px] text-[#00E599] uppercase tracking-wider">
-                  {incomingPatients.length} Inbound
-                </span>
+                <div>
+                  <span className="font-mono text-xs uppercase tracking-widest text-zinc-400 block">
+                    Incoming ER Telemetry
+                  </span>
+                  <span className="text-[10px] text-zinc-500 font-mono">
+                    Real-time SBAR Voice & Resource Sync
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={playRedInboundChime}
+                    className="touch-target px-2.5 py-1 rounded bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 text-[10px] font-mono flex items-center gap-1 active:scale-95 transition-all"
+                    title="Test audible chime for incoming RED patient (HD-4)"
+                  >
+                    <span>🔔 {audioChimePlayed ? 'Re-chime' : 'Test RED Chime'}</span>
+                  </button>
+                  <span className="font-mono text-[10px] text-[#00E599] uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                    {incomingPatients.length} Inbound
+                  </span>
+                </div>
               </div>
 
               {incomingPatients.length === 0 ? (
@@ -531,65 +570,108 @@ export default function HospitalDashboardPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {incomingPatients.map(({ patient, handover }) => (
-                    <div
-                      key={patient.id}
-                      className="p-5 rounded-xl border border-white/20 bg-zinc-950/80 space-y-4"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="telemetry-pip bg-[#FF2A44] shadow-[0_0_8px_#FF2A44]" />
-                          <span className="font-mono text-xs font-semibold text-white uppercase">
-                            RED SEVERITY
+                  {incomingPatients.map(({ patient, handover }) => {
+                    const checklistItems = handover?.structured
+                      ? generatePreArrivalChecklist(handover.structured)
+                      : [];
+
+                    return (
+                      <div
+                        key={patient.id}
+                        className="p-5 rounded-xl border border-rose-500/30 bg-gradient-to-b from-rose-950/20 via-zinc-950/80 to-zinc-950 space-y-4 shadow-xl"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="telemetry-pip bg-[#FF2A44] shadow-[0_0_8px_#FF2A44] animate-ping" />
+                            <span className="font-mono text-xs font-semibold text-rose-400 uppercase tracking-wider">
+                              CRITICAL RED PRIORITY
+                            </span>
+                          </div>
+                          <span className="font-mono text-xs text-white bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30">
+                            ETA {patient.eta_min ?? 8} MIN
                           </span>
                         </div>
-                        <span className="font-mono text-xs text-white">
-                          ETA {patient.eta_min} MIN
-                        </span>
-                      </div>
 
-                      <div className="text-xs text-zinc-300">
-                        {handover?.structured?.age}Y {handover?.structured?.sex} — {handover?.structured?.mechanism}
-                      </div>
-
-                      {handover?.structured?.vitals && (
-                        <div className="grid grid-cols-4 gap-2 p-2.5 rounded-lg bg-black/60 border border-white/[0.06] font-mono text-center text-xs">
-                          <div>
-                            <span className="text-[9px] text-zinc-500 block">HR</span>
-                            <span className="text-white">{handover.structured.vitals.hr ?? '--'}</span>
-                          </div>
-                          <div>
-                            <span className="text-[9px] text-zinc-500 block">BP</span>
-                            <span className="text-white">{handover.structured.vitals.bp ?? '--'}</span>
-                          </div>
-                          <div>
-                            <span className="text-[9px] text-zinc-500 block">SPO2</span>
-                            <span className="text-white">{handover.structured.vitals.spo2 ?? '--'}%</span>
-                          </div>
-                          <div>
-                            <span className="text-[9px] text-zinc-500 block">GCS</span>
-                            <span className="text-white">{handover.structured.vitals.gcs ?? '--'}</span>
-                          </div>
+                        <div className="text-xs text-zinc-200 font-medium">
+                          {handover?.structured?.age ? `${handover.structured.age}Y` : ''}{' '}
+                          {handover?.structured?.sex || 'Unknown'} —{' '}
+                          <span className="text-cyan-400">{handover?.structured?.mechanism || 'Emergency Trauma Evaluation'}</span>
                         </div>
-                      )}
 
-                      <div className="p-3.5 rounded-lg bg-zinc-900 border border-white/10 space-y-2 font-mono text-xs">
-                        <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">
-                          Pre-Arrival Prep Checklist
-                        </span>
-                        <ul className="space-y-1.5 text-zinc-300">
-                          <li>• Prepare 2 units O- blood in Trauma Bay</li>
-                          <li>• Alert on-call Trauma Surgeon</li>
-                          <li>• Hold OR-1 on immediate standby</li>
-                        </ul>
-                      </div>
+                        {handover?.structured?.vitals && (
+                          <div className="grid grid-cols-4 gap-2 p-2.5 rounded-lg bg-black/60 border border-white/[0.08] font-mono text-center text-xs">
+                            <div>
+                              <span className="text-[9px] text-zinc-500 block">HR</span>
+                              <span className="text-rose-400 font-bold">{handover.structured.vitals.hr ?? '--'}</span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] text-zinc-500 block">BP</span>
+                              <span className="text-amber-400 font-bold">{handover.structured.vitals.bp ?? '--'}</span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] text-zinc-500 block">SPO2</span>
+                              <span className="text-cyan-400 font-bold">{handover.structured.vitals.spo2 ?? '--'}%</span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] text-zinc-500 block">GCS</span>
+                              <span className="text-purple-400 font-bold">{handover.structured.vitals.gcs ?? '--'}</span>
+                            </div>
+                          </div>
+                        )}
 
-                      <div className="flex justify-between font-mono text-[10px] text-zinc-500 pt-1 border-t border-white/[0.06]">
-                        <span>Bed Hold Active</span>
-                        <span className="text-[#00E599]">12:45 remaining</span>
+                        {/* Injuries Tags */}
+                        {handover?.structured?.injuries && handover.structured.injuries.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {handover.structured.injuries.map((inj, idx) => (
+                              <span
+                                key={idx}
+                                className="text-[10px] px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20 font-mono"
+                              >
+                                {inj}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Generated Pre-Arrival Action Checklist (VH-5) */}
+                        <div className="p-3.5 rounded-lg bg-zinc-900 border border-cyan-500/20 space-y-2 font-mono text-xs">
+                          <span className="text-[10px] text-cyan-400 uppercase tracking-wider block font-bold">
+                            Pre-Arrival Action Checklist (Automated)
+                          </span>
+                          <ul className="space-y-1.5 text-zinc-300">
+                            {checklistItems.length > 0 ? (
+                              checklistItems.map((item) => (
+                                <li key={item.id} className="flex items-start gap-1.5 text-[11px]">
+                                  <span className="text-cyan-400 font-bold">✓</span>
+                                  <span>{item.title}</span>
+                                </li>
+                              ))
+                            ) : (
+                              <>
+                                <li className="flex items-start gap-1.5 text-[11px]">
+                                  <span className="text-cyan-400 font-bold">✓</span>
+                                  <span>Prepare 2 units O- blood in Trauma Bay</span>
+                                </li>
+                                <li className="flex items-start gap-1.5 text-[11px]">
+                                  <span className="text-cyan-400 font-bold">✓</span>
+                                  <span>Alert on-call Trauma Surgeon</span>
+                                </li>
+                                <li className="flex items-start gap-1.5 text-[11px]">
+                                  <span className="text-cyan-400 font-bold">✓</span>
+                                  <span>Hold OR-1 on immediate standby</span>
+                                </li>
+                              </>
+                            )}
+                          </ul>
+                        </div>
+
+                        <div className="flex justify-between font-mono text-[10px] text-zinc-500 pt-1 border-t border-white/[0.06]">
+                          <span>15-Min Bed Hold Active</span>
+                          <span className="text-[#00E599]">12:45 remaining</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -127,5 +127,5 @@ Write Playwright tests for the six acceptance criteria in SRS section 9. Fix fai
 
 ## Progress checklist
 - [x] P0 Setup  - [x] P1 Hospital dashboard  - [x] P2 Matching  - [x] P3 MedPass
-- [x] P4 Incidents/map  - [x] P5 QueuePredict  - [ ] P6 Voice  - [ ] P7 Offline/peer
+- [x] P4 Incidents/map  - [x] P5 QueuePredict  - [x] P6 Voice  - [ ] P7 Offline/peer
 - [ ] P8 Command/MCI  - [ ] P9 Rehearsal
