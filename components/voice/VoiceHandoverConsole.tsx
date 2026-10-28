@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { HandoverStructuredData } from '@/lib/types/database';
 import { PreArrivalChecklistItem, generatePreArrivalChecklist } from '@/lib/voice/parser';
+import { enqueueOutboxEvent, flushOutbox } from '@/lib/offline/outbox';
 
 // Extend window for Web Speech API
 interface IWindow extends Window {
@@ -264,27 +265,60 @@ export function VoiceHandoverConsole({
     if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
     setCountdown(null);
 
-    try {
-      const res = await fetch(`/api/handover/${hId}/confirm`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          handover_id: hId,
-          patient_id: patientId,
-          hospital_id: hospitalId,
-          structured: structData,
-        }),
-      });
+    const clientUuid = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `hnd-${Date.now()}`;
+    const payload = {
+      handover_id: hId,
+      patient_id: patientId,
+      hospital_id: hospitalId,
+      structured: structData,
+    };
 
-      const data = await res.json();
-      if (data.success) {
-        setIsConfirmed(true);
-        if (onHandoverConfirmed) {
-          onHandoverConfirmed(structData);
+    // 1. Enqueue in resilient offline outbox (RL-1, VH-7)
+    try {
+      await enqueueOutboxEvent({
+        id: clientUuid,
+        type: 'voice_handover',
+        endpoint: `/api/handover/${hId}/confirm`,
+        method: 'POST',
+        payload,
+      });
+    } catch (e) {
+      console.warn('Failed to enqueue handover', e);
+    }
+
+    try {
+      if (typeof window !== 'undefined' && window.navigator.onLine) {
+        const res = await fetch(`/api/handover/${hId}/confirm`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Client-UUID': clientUuid,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          flushOutbox().catch(() => {});
+          setIsConfirmed(true);
+          if (onHandoverConfirmed) {
+            onHandoverConfirmed(structData);
+          }
+          return;
         }
       }
+
+      // Offline mode confirmation (VH-7)
+      setIsConfirmed(true);
+      if (onHandoverConfirmed) {
+        onHandoverConfirmed(structData);
+      }
     } catch (err) {
-      console.error('Error confirming handover:', err);
+      console.error('Error confirming handover online, preserved in outbox:', err);
+      setIsConfirmed(true);
+      if (onHandoverConfirmed) {
+        onHandoverConfirmed(structData);
+      }
     }
   };
 

@@ -6,6 +6,8 @@ import { IncidentType, TriageLevel } from '@/lib/types/database';
 import { PUNE_CENTER } from '@/lib/config';
 import { findNearestAvailableAmbulance } from '@/lib/incident/service';
 import { MOCK_AMBULANCES } from '@/lib/supabase/mock-data';
+import { enqueueOutboxEvent, flushOutbox } from '@/lib/offline/outbox';
+import { generateCompactIncidentSMS } from '@/lib/peer/relay';
 
 export default function NewIncidentPage() {
   const router = useRouter();
@@ -18,6 +20,11 @@ export default function NewIncidentPage() {
   const [medpassToken, setMedpassToken] = useState<string>('tok_asha_k_9901');
   const [isDetectingGps, setIsDetectingGps] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [offlineNotice, setOfflineNotice] = useState<{
+    clientUuid: string;
+    smsLink: string;
+    smsCode: string;
+  } | null>(null);
   const [suggestedAmbulance, setSuggestedAmbulance] = useState<{ callsign: string; eta: number } | null>({
     callsign: 'Apex-101',
     eta: 4,
@@ -52,36 +59,71 @@ export default function NewIncidentPage() {
 
   const handleCreateIncident = async () => {
     setIsSubmitting(true);
+    setOfflineNotice(null);
+
+    const clientUuid = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `inc-${Date.now()}`;
+    const payload = {
+      type,
+      latitude,
+      longitude,
+      patient_count: patientCount,
+      initial_triage: triage,
+      client_uuid: clientUuid,
+      medpass_token: medpassToken || undefined,
+    };
+
+    // 1. Enqueue to IndexedDB Outbox (RL-1) for guaranteed durability
     try {
-      const clientUuid = crypto.randomUUID();
-      const payload = {
-        type,
-        latitude,
-        longitude,
-        patient_count: patientCount,
-        initial_triage: triage,
-        client_uuid: clientUuid,
-        medpass_token: medpassToken || undefined,
-      };
-
-      const res = await fetch('/api/incidents', {
+      await enqueueOutboxEvent({
+        id: clientUuid,
+        type: 'create_incident',
+        endpoint: '/api/incidents',
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        payload,
       });
-
-      const json = await res.json();
-      if (json.success && json.incident) {
-        router.push(`/incident/${json.incident.id}`);
-      } else {
-        alert('Failed to launch incident: ' + JSON.stringify(json.details || json.error));
-      }
     } catch (e) {
-      console.error(e);
-      alert('Network error while launching emergency incident');
-    } finally {
-      setIsSubmitting(false);
+      console.warn('Failed to write to local outbox store', e);
     }
+
+    // 2. Try online dispatch if network is available
+    if (typeof window !== 'undefined' && window.navigator.onLine) {
+      try {
+        const res = await fetch('/api/incidents', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Client-UUID': clientUuid,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const json = await res.json();
+        if (json.success && json.incident) {
+          // Flush outbox so event marks synced
+          flushOutbox().catch(() => {});
+          router.push(`/incident/${json.incident.id}`);
+          return;
+        }
+      } catch (err) {
+        console.warn('Online dispatch failed, falling back to offline outbox & SMS', err);
+      }
+    }
+
+    // 3. Offline path: Prepare compact SMS fallback (RL-4)
+    const sms = generateCompactIncidentSMS({
+      triage,
+      type,
+      lat: latitude,
+      lng: longitude,
+      patients: patientCount,
+    });
+
+    setOfflineNotice({
+      clientUuid,
+      smsLink: sms.smsDeepLink,
+      smsCode: sms.code,
+    });
+    setIsSubmitting(false);
   };
 
   const INCIDENT_TYPES: { type: IncidentType; code: string; label: string }[] = [
@@ -105,9 +147,46 @@ export default function NewIncidentPage() {
           Report Emergency
         </h1>
         <p className="text-sm text-zinc-400 font-normal">
-          One-handed rapid triage reporting with automatic nearest fleet assignment.
+          One-handed rapid triage reporting with automatic nearest fleet assignment and offline outbox resilience.
         </p>
       </div>
+
+      {/* Offline Outbox & SMS Fallback Banner (RL-1, RL-4) */}
+      {offlineNotice && (
+        <div className="p-6 rounded-2xl bg-amber-950/40 border border-amber-500/50 space-y-4 font-mono">
+          <div className="flex items-center gap-2 text-amber-300 text-xs font-semibold uppercase tracking-wider">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span>Saved to Offline Outbox (Client UUID: {offlineNotice.clientUuid.slice(0, 8)})</span>
+          </div>
+          <p className="text-xs text-zinc-300 font-sans leading-relaxed">
+            Network is currently disconnected. Your incident report has been securely queued in IndexedDB and will auto-flush to the ER grid once connection resumes.
+          </p>
+          <div className="p-3 bg-black/60 rounded-xl border border-white/10 text-xs space-y-1">
+            <span className="text-[10px] text-zinc-500 uppercase tracking-wider block">
+              Compact SMS Fallback Code (RL-4)
+            </span>
+            <div className="text-emerald-400 font-mono select-all">
+              {offlineNotice.smsCode}
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <a
+              href={offlineNotice.smsLink}
+              className="touch-target px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-mono text-xs uppercase tracking-wider font-semibold transition-all flex items-center gap-2"
+            >
+              <span>1-Tap Send SMS to Dispatch</span>
+              <span>→</span>
+            </a>
+            <button
+              type="button"
+              onClick={() => router.push('/peer')}
+              className="touch-target px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-white font-mono text-xs uppercase tracking-wider transition-all"
+            >
+              Forward via Peer Relay
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-8">
         {/* 1. Incident Type Selection (Clean Typographic Grid) */}

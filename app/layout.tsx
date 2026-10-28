@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
+import { ConnectivityIndicator } from "@/components/offline/ConnectivityIndicator";
 
 export const metadata: Metadata = {
   title: "TriageSync 2.0 + MedPass — Emergency Medical Dispatch & Identity",
@@ -26,11 +27,11 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className="min-h-screen flex flex-col font-sans bg-[#040406] text-zinc-100 selection:bg-white/20 selection:text-white">
         {/* Minimal High-End Header */}
-        <header className="sticky top-0 z-50 tactile-panel border-b border-white/[0.08] px-6 py-3">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <header className="sticky top-0 z-50 tactile-panel border-b border-white/[0.08] px-4 sm:px-6 py-3">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
             <Link
               href="/"
-              className="flex items-center gap-3 touch-target focus:outline-none focus:ring-1 focus:ring-white/40 rounded-lg group"
+              className="flex items-center gap-3 touch-target focus:outline-none focus:ring-1 focus:ring-white/40 rounded-lg group shrink-0"
               aria-label="TriageSync 2.0 Home"
             >
               <span className="telemetry-pip bg-[#00E599] shadow-[0_0_8px_#00E599]" />
@@ -38,36 +39,52 @@ export default function RootLayout({
                 <span className="font-mono text-xs font-semibold tracking-wider text-white uppercase">
                   TriageSync
                 </span>
-                <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+                <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest hidden sm:inline">
                   / MEDPASS 2.0
                 </span>
               </div>
             </Link>
 
-            {/* Clean Typographic Navigation */}
-            <nav className="flex items-center gap-1 sm:gap-4 font-mono text-[11px] tracking-wider uppercase">
-              <Link
-                href="/medpass"
-                className="touch-target px-3 py-2 text-zinc-400 hover:text-white transition-colors"
-              >
-                MedPass
-              </Link>
-              <Link
-                href="/hospital/dashboard"
-                className="touch-target px-3 py-2 text-zinc-400 hover:text-white transition-colors"
-              >
-                ER Radar
-              </Link>
-              <Link
-                href="/incident/new"
-                className="touch-target px-3 py-2 text-zinc-400 hover:text-white transition-colors"
-              >
-                Report Emergency
-              </Link>
-              <div className="hidden sm:flex items-center gap-2 pl-4 border-l border-white/[0.08]">
-                <span className="text-[10px] text-zinc-500">PUNE SECTOR 01</span>
+            {/* Clean Typographic Navigation + Connectivity Telemetry */}
+            <div className="flex items-center gap-2 sm:gap-6">
+              <nav className="flex items-center gap-1 sm:gap-3 font-mono text-[11px] tracking-wider uppercase">
+                <Link
+                  href="/medpass"
+                  className="touch-target px-2.5 py-1.5 text-zinc-400 hover:text-white transition-colors"
+                >
+                  MedPass
+                </Link>
+                <Link
+                  href="/hospital/dashboard"
+                  className="touch-target px-2.5 py-1.5 text-zinc-400 hover:text-white transition-colors hidden md:inline"
+                >
+                  ER Radar
+                </Link>
+                <Link
+                  href="/command"
+                  className="touch-target px-2.5 py-1.5 text-zinc-400 hover:text-white transition-colors hidden lg:inline"
+                >
+                  Command
+                </Link>
+                <Link
+                  href="/peer"
+                  className="touch-target px-2.5 py-1.5 text-zinc-400 hover:text-white transition-colors"
+                >
+                  Mesh Relay
+                </Link>
+                <Link
+                  href="/incident/new"
+                  className="touch-target px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white text-white hover:text-black transition-all font-semibold"
+                >
+                  SOS
+                </Link>
+              </nav>
+
+              {/* Realtime Outbox & Connectivity Indicator (RL-7) */}
+              <div className="pl-2 border-l border-white/[0.08]">
+                <ConnectivityIndicator />
               </div>
-            </nav>
+            </div>
           </div>
         </header>
 
@@ -86,7 +103,7 @@ export default function RootLayout({
               </span>
             </div>
             <div className="text-zinc-400 text-[11px] tracking-wider">
-              IEEE 830 / ISO 29148 SPECIFICATION • ED25519 VERIFIABLE
+              IEEE 830 / ISO 29148 SPECIFICATION • ED25519 VERIFIABLE • RESILIENTLINK OUTBOX
             </div>
           </div>
         </footer>

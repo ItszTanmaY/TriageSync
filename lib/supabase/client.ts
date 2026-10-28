@@ -21,6 +21,7 @@ import {
   HandoverRecord,
   RecommendationRecord,
   DiversionRecord,
+  MedPassScan,
 } from '@/lib/types/database';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -53,6 +54,7 @@ class LocalMockStore {
   private handovers: Map<string, HandoverRecord> = new Map();
   private recommendations: Map<string, RecommendationRecord> = new Map();
   private diversions: DiversionRecord[] = [];
+  private scans: MedPassScan[] = [];
 
   constructor() {
     this.resetToDefaults();
@@ -75,6 +77,7 @@ class LocalMockStore {
     this.handovers.clear();
     this.recommendations.clear();
     this.diversions = [];
+    this.scans = [];
   }
 
   public getHospitals(): Hospital[] {
@@ -218,6 +221,14 @@ class LocalMockStore {
 
   public getDiversions(): DiversionRecord[] {
     return [...this.diversions];
+  }
+
+  public logMedPassScan(scan: MedPassScan): void {
+    this.scans.push(scan);
+  }
+
+  public getMedPassScans(): MedPassScan[] {
+    return [...this.scans];
   }
 
   public getMedPassByToken(token: string) {

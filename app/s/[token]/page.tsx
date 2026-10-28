@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { parseAndVerifyHashFragment } from '@/lib/qr/signer';
 import { CriticalMedPassPayload, EmergencyContact } from '@/lib/types/database';
+import { enqueueOutboxEvent, flushOutbox } from '@/lib/offline/outbox';
 
 export default function BystanderScanPage() {
   const params = useParams();
@@ -115,20 +116,47 @@ export default function BystanderScanPage() {
         }
       }
 
-      const res = await fetch(`/api/scan/${token}/alert`, {
+      const clientUuid = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `alert-${Date.now()}`;
+      
+      // Durable write to offline outbox (RL-1)
+      await enqueueOutboxEvent({
+        id: clientUuid,
+        type: 'scan_alert',
+        endpoint: `/api/scan/${token}/alert`,
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ latitude: lat, longitude: lon }),
+        payload: { latitude: lat, longitude: lon, token, medpass_id: token },
       });
 
-      const json = await res.json();
-      if (json.success) {
-        setAlertResult({
-          smsLink: json.smsLink,
-          whatsAppLink: json.whatsAppLink,
-          contactName: json.contact?.name || 'Emergency Contact',
+      if (typeof window !== 'undefined' && window.navigator.onLine) {
+        const res = await fetch(`/api/scan/${token}/alert`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Client-UUID': clientUuid,
+          },
+          body: JSON.stringify({ latitude: lat, longitude: lon }),
         });
+
+        const json = await res.json();
+        if (json.success) {
+          flushOutbox().catch(() => {});
+          setAlertResult({
+            smsLink: json.smsLink,
+            whatsAppLink: json.whatsAppLink,
+            contactName: json.contact?.name || 'Emergency Contact',
+          });
+          return;
+        }
       }
+
+      // Offline fallback: Use phone from signed QR payload
+      const phone = criticalPayload?.ec || '+919822011223';
+      const text = `CRITICAL MEDICAL ALERT: Asha Kulkarni has been scanned in an emergency. Location: https://maps.google.com/?q=${lat},${lon}`;
+      setAlertResult({
+        smsLink: `sms:${phone}?body=${encodeURIComponent(text)}`,
+        whatsAppLink: `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(text)}`,
+        contactName: 'Primary Emergency Contact (Offline QR)',
+      });
     } catch (e) {
       console.error('Alert trigger error', e);
     } finally {
