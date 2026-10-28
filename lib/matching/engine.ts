@@ -21,6 +21,11 @@ import {
   INCIDENT_REQUIREMENTS,
   BLOOD_COMPATIBILITY,
 } from '@/lib/config';
+import {
+  InboundAmbulanceInfo,
+  calculateInboundCount,
+  calculateProjectedErLoad,
+} from '@/lib/queue/engine';
 
 export interface MatchingInput {
   incidentLocation: GeoLocation;
@@ -31,6 +36,7 @@ export interface MatchingInput {
   hospitals: Hospital[];
   resourcesMap: Record<string, HospitalResources>;
   bloodStockList: BloodStockItem[];
+  inboundAmbulances?: InboundAmbulanceInfo[];
   nowTimestamp?: number;
 }
 
@@ -240,11 +246,19 @@ export function rankHospitalsForIncident(input: MatchingInput): {
     );
     const bloodScore = bloodResult.score;
 
-    // Factor 5: Queue / Load Score (0.0 - 1.0)
-    const erTotal = res?.er_total || 20;
-    const erOccupied = Math.max(0, erTotal - (res?.er_free || 0));
-    const projectedErLoad = Math.min(1.0, erOccupied / erTotal);
-    const queueScore = Math.max(0, 1.0 - projectedErLoad);
+    // Factor 5: Queue / Load Score (0.0 - 1.0) via QueuePredict (Architecture Section 6)
+    let projectedErLoad = 0.5;
+    let queueScore = 0.5;
+
+    if (res) {
+      const inboundCount = input.inboundAmbulances
+        ? calculateInboundCount(hospital.id, etaMinutes, input.inboundAmbulances)
+        : 0;
+
+      const qResult = calculateProjectedErLoad(res, inboundCount, etaMinutes);
+      projectedErLoad = qResult.projectedLoad;
+      queueScore = Math.max(0, 1.0 - projectedErLoad);
+    }
 
     // Factor 6: Freshness Score (0.0 - 1.0)
     const updatedTime = res ? new Date(res.updated_at).getTime() : nowTimestamp;
