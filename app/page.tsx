@@ -80,16 +80,16 @@ export default function Home() {
           <span className="font-mono text-[11px] text-zinc-400">SELECT OPERATIONAL WORKFLOW</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {/* 1. Bystander Scan */}
           <Link
             href="/s/tok_asha_k_9901"
-            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover border border-white/20 hover:border-white/50 bg-[#0c0c12]/90 flex flex-col justify-between min-h-[230px] transition-all shadow-sm hover:shadow-lg"
           >
             <div>
-              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4 pb-3 border-b border-white/10">
                 <span>01 / Scan</span>
-                <span className="text-[#00E599]">Zero Login Required</span>
+                <span className="text-[#00E599] font-medium">Zero Login Required</span>
               </div>
               <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
                 Bystander Scan & Alert
@@ -107,12 +107,12 @@ export default function Home() {
           {/* 2. MedPass Generator */}
           <Link
             href="/medpass"
-            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover border border-white/20 hover:border-white/50 bg-[#0c0c12]/90 flex flex-col justify-between min-h-[230px] transition-all shadow-sm hover:shadow-lg"
           >
             <div>
-              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4 pb-3 border-b border-white/10">
                 <span>02 / Citizen</span>
-                <span>Tiered Privacy</span>
+                <span className="font-medium text-zinc-300">Tiered Privacy</span>
               </div>
               <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
                 MedPass Generator
@@ -130,12 +130,12 @@ export default function Home() {
           {/* 3. Paramedic Dispatch */}
           <Link
             href="/incident/new"
-            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover border border-white/20 hover:border-white/50 bg-[#0c0c12]/90 flex flex-col justify-between min-h-[230px] transition-all shadow-sm hover:shadow-lg"
           >
             <div>
-              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4 pb-3 border-b border-white/10">
                 <span>03 / Paramedic</span>
-                <span className="text-[#00E599]">GPS Synced</span>
+                <span className="text-[#00E599] font-medium">GPS Synced</span>
               </div>
               <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
                 Rapid Incident Report
@@ -153,12 +153,12 @@ export default function Home() {
           {/* 4. Hospital Live ER Radar */}
           <Link
             href="/hospital/dashboard"
-            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover border border-white/20 hover:border-white/50 bg-[#0c0c12]/90 flex flex-col justify-between min-h-[230px] transition-all shadow-sm hover:shadow-lg"
           >
             <div>
-              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4 pb-3 border-b border-white/10">
                 <span>04 / Hospital</span>
-                <span className="text-[#00E599]">Realtime Sync</span>
+                <span className="text-[#00E599] font-medium">Realtime Sync</span>
               </div>
               <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
                 Hospital ER Radar
@@ -176,12 +176,12 @@ export default function Home() {
           {/* 5. Command Center */}
           <Link
             href="/command"
-            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover border border-white/20 hover:border-white/50 bg-[#0c0c12]/90 flex flex-col justify-between min-h-[230px] transition-all shadow-sm hover:shadow-lg"
           >
             <div>
-              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4 pb-3 border-b border-white/10">
                 <span>05 / Dispatch</span>
-                <span>Load Balancing</span>
+                <span className="font-medium text-zinc-300">Load Balancing</span>
               </div>
               <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
                 Command Center &amp; Map
@@ -199,12 +199,12 @@ export default function Home() {
           {/* 6. Peer Relay & Offline Mesh */}
           <Link
             href="/peer"
-            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover border border-white/20 hover:border-white/50 bg-[#0c0c12]/90 flex flex-col justify-between min-h-[230px] transition-all shadow-sm hover:shadow-lg"
           >
             <div>
-              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4 pb-3 border-b border-white/10">
                 <span>06 / ResilientLink</span>
-                <span className="text-[#00E599]">Zero Cell Data</span>
+                <span className="text-[#00E599] font-medium">Zero Cell Data</span>
               </div>
               <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
                 Mesh Relay &amp; SMS Fallback

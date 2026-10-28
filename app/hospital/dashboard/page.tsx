@@ -11,10 +11,20 @@ import {
 } from '@/lib/types/database';
 import { calculateFreshnessStatus } from '@/lib/hospital/resources';
 import { generatePreArrivalChecklist } from '@/lib/voice/parser';
+import { useAuth } from '@/lib/auth/context';
 
 export default function HospitalDashboardPage() {
-  const [selectedHospitalId, setSelectedHospitalId] = useState<string>('hosp-001');
+  const { user, switchUser } = useAuth();
+  const [selectedHospitalId, setSelectedHospitalId] = useState<string>(() => {
+    return user?.hospital_id || 'hosp-001';
+  });
   const [hospital, setHospital] = useState<Hospital | null>(null);
+
+  useEffect(() => {
+    if (user?.role === 'hospital_staff' && user.hospital_id) {
+      setSelectedHospitalId(user.hospital_id);
+    }
+  }, [user]);
   const [resources, setResources] = useState<HospitalResources | null>(null);
   const [bloodStock, setBloodStock] = useState<BloodStockItem[]>([]);
   const [incomingPatients, setIncomingPatients] = useState<{ patient: Patient; handover?: HandoverRecord }[]>([]);
@@ -225,6 +235,35 @@ export default function HospitalDashboardPage() {
 
   return (
     <div className="space-y-10 py-2">
+      {/* Role-Scoped Access Banner */}
+      {user?.role === 'citizen' && (
+        <div className="p-4 rounded-2xl bg-zinc-950/90 border border-white/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+          <div className="flex items-center gap-2 text-zinc-300">
+            <span className="telemetry-pip bg-[#00E599]" />
+            <span>Viewing as Citizen ({user.full_name}). Public View: Log in as Hospital Staff to manage emergency bed counts.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => switchUser('hospital_staff')}
+            className="touch-target px-3.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 font-semibold uppercase text-[10px] tracking-wider transition-colors shrink-0"
+          >
+            Switch to ER Staff Demo
+          </button>
+        </div>
+      )}
+
+      {user?.role === 'hospital_staff' && (
+        <div className="p-3.5 rounded-2xl bg-cyan-950/30 border border-cyan-500/40 flex items-center justify-between gap-3 text-xs font-mono text-cyan-300">
+          <div className="flex items-center gap-2">
+            <span className="telemetry-pip bg-[#00E5FF] shadow-[0_0_8px_#00E5FF]" />
+            <span>Authenticated ER Clinical Session: <strong>{user.full_name}</strong> @ {hospital?.name}</span>
+          </div>
+          <span className="text-[10px] uppercase tracking-wider text-cyan-400 font-bold hidden sm:inline">
+            Full Clinical Authorization
+          </span>
+        </div>
+      )}
+
       {/* Top Header: Switcher & Telemetry Banner */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-white/[0.08] pb-6">
         <div className="space-y-1">

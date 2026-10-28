@@ -41,12 +41,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-cyan-500/25 selection:text-cyan-200;
-    background-color: #050814;
+    @apply bg-background text-foreground antialiased selection:bg-white/20 selection:text-white;
+    background-color: #040406;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.07) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 60%),
+      radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(0, 229, 153, 0.02) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(0, 229, 255, 0.02) 0px, transparent 60%),
       linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
       linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
     background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
@@ -65,21 +65,48 @@
   }
 }
 
-/* Rich Awwwards Glassmorphic & Telemetry Classes */
-.glass-panel {
-  background: rgba(13, 19, 34, 0.75);
+/* Rich Monochromatic Tactile & Frosted Glass Classes */
+.tactile-panel {
+  background: rgba(10, 10, 14, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
+}
+
+.tactile-panel-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tactile-panel-hover:hover {
+  background: rgba(18, 18, 24, 0.95);
+  border-color: rgba(255, 255, 255, 0.38);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.06);
+}
+
+/* Crystal Frosted Glass Navbar with Heavy Blur */
+.navbar-blur {
+  background: rgba(4, 4, 6, 0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.7);
+}
+
+.glass-panel {
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6);
 }
 
 .glass-panel-glow {
-  background: rgba(13, 20, 38, 0.82);
+  background: rgba(12, 14, 22, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  box-shadow: 0 0 35px -5px rgba(0, 240, 255, 0.15), 0 10px 30px -5px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 0 30px -5px rgba(255, 255, 255, 0.08), 0 10px 30px -5px rgba(0, 0, 0, 0.7);
 }
 
 .glass-card-interactive {
@@ -87,8 +114,8 @@
 }
 .glass-card-interactive:hover {
   transform: translateY(-2px);
-  border-color: rgba(0, 240, 255, 0.45);
-  box-shadow: 0 14px 35px -5px rgba(0, 240, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 14px 35px -5px rgba(0, 0, 0, 0.8);
 }
 
 .badge-triage-red {
@@ -122,12 +149,12 @@
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #060913;
+  background: #040406;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #27272a;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #3f3f46;
 }
