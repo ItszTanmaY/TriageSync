@@ -8,10 +8,10 @@ import { DEMO_USERS } from '@/lib/auth/types';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, switchUser } = useAuth();
+  const { login, switchUser, isSupabaseConnected } = useAuth();
 
-  const [email, setEmail] = useState<string>('asha@citizen.medpass.in');
-  const [password, setPassword] = useState<string>('password123');
+  const [email, setEmail] = useState<string>('priya@sahyadri.health');
+  const [password, setPassword] = useState<string>('Password123!');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -48,9 +48,20 @@ export default function LoginPage() {
         <h1 className="text-3xl font-normal text-white tracking-tight">
           Sign In
         </h1>
-        <p className="text-xs text-zinc-400">
-          Role-scoped access for citizens, hospital ER trauma teams, paramedics, and dispatchers.
-        </p>
+        <div className="flex items-center justify-between pt-1">
+          <p className="text-xs text-zinc-400">
+            Role-scoped access for citizens, hospital ER trauma teams, paramedics, and dispatchers.
+          </p>
+          <span
+            className={`px-2 py-0.5 rounded font-mono text-[9px] uppercase font-semibold shrink-0 border ${
+              isSupabaseConnected
+                ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300'
+                : 'bg-zinc-900 border-white/10 text-zinc-400'
+            }`}
+          >
+            {isSupabaseConnected ? '● Supabase Live Auth' : '○ Standalone Demo Auth'}
+          </span>
+        </div>
       </div>
 
       {/* Form Card */}
