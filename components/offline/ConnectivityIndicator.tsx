@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   getOutboxSummary,
   flushOutbox,
@@ -19,6 +19,24 @@ export function ConnectivityIndicator() {
   });
   const [isFlushing, setIsFlushing] = useState<boolean>(false);
   const [lastSyncMessage, setLastSyncMessage] = useState<string | null>(null);
+
+  const handleFlush = useCallback(async () => {
+    if (isFlushing) return;
+    setIsFlushing(true);
+    setLastSyncMessage(null);
+    try {
+      const res = await flushOutbox();
+      const updated = await getOutboxSummary();
+      setSummary(updated);
+      if (res.syncedIds.length > 0) {
+        setLastSyncMessage(`Synced ${res.syncedIds.length} item(s)`);
+      }
+    } catch {
+      setLastSyncMessage('Sync failed (offline)');
+    } finally {
+      setIsFlushing(false);
+    }
+  }, [isFlushing]);
 
   useEffect(() => {
     // Initial online state
@@ -66,25 +84,7 @@ export function ConnectivityIndicator() {
       window.removeEventListener('offline', handleOffline);
       clearInterval(interval);
     };
-  }, [isSimulatedOffline, summary.pending]);
-
-  const handleFlush = async () => {
-    if (isFlushing) return;
-    setIsFlushing(true);
-    setLastSyncMessage(null);
-    try {
-      const res = await flushOutbox();
-      const updated = await getOutboxSummary();
-      setSummary(updated);
-      if (res.syncedIds.length > 0) {
-        setLastSyncMessage(`Synced ${res.syncedIds.length} item(s)`);
-      }
-    } catch {
-      setLastSyncMessage('Sync failed (offline)');
-    } finally {
-      setIsFlushing(false);
-    }
-  };
+  }, [isSimulatedOffline, summary.pending, handleFlush]);
 
   const toggleSimulatedOffline = () => {
     const next = !isSimulatedOffline;
