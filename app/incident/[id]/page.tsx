@@ -13,14 +13,6 @@ import { calculateGoldenHour, LIFECYCLE_ORDER } from '@/lib/incident/service';
 import { MOCK_HOSPITALS } from '@/lib/supabase/mock-data';
 import { HospitalRecommendationList } from '@/components/matching/HospitalRecommendationList';
 import { EmergencyMap } from '@/components/map/EmergencyMap';
-import {
-  ShieldAlert,
-  Clock,
-  Ambulance as AmbulanceIcon,
-  CheckCircle2,
-  Play,
-  Activity,
-} from 'lucide-react';
 
 export default function ParamedicIncidentConsole() {
   const params = useParams();
@@ -36,7 +28,7 @@ export default function ParamedicIncidentConsole() {
     formattedRemaining: '59:59',
     percentageElapsed: 0,
     urgencyTier: 'safe',
-    colorClass: 'text-emerald-400 bg-emerald-950/60 border-emerald-500/50',
+    colorClass: '',
   });
 
   const [topRecommendations, setTopRecommendations] = useState<HospitalRankItem[]>([]);
@@ -45,7 +37,6 @@ export default function ParamedicIncidentConsole() {
   const [reservedUntil, setReservedUntil] = useState<string | null>(null);
   const [isSimulatingStep, setIsSimulatingStep] = useState<boolean>(false);
 
-  // Load Incident, Ambulances, and Recommendations
   useEffect(() => {
     let active = true;
 
@@ -71,7 +62,6 @@ export default function ParamedicIncidentConsole() {
           setAllAmbulances(ambJson.data);
         }
 
-        // Fetch Capability Recommendations
         const recRes = await fetch(`/api/incidents/${incidentId}/recommend`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -96,7 +86,6 @@ export default function ParamedicIncidentConsole() {
 
     loadIncidentData();
 
-    // Golden hour live countdown interval (ticking every second)
     const timer = setInterval(() => {
       if (incident?.created_at) {
         setGoldenHour(calculateGoldenHour(incident.created_at));
@@ -109,7 +98,6 @@ export default function ParamedicIncidentConsole() {
     };
   }, [incidentId, incident?.created_at, selectedHospitalId]);
 
-  // Handle Lifecycle Status Transition
   const handleTransitionStatus = async (newStatus: IncidentStatus) => {
     try {
       const res = await fetch(`/api/incidents/${incidentId}`, {
@@ -126,7 +114,6 @@ export default function ParamedicIncidentConsole() {
     }
   };
 
-  // Handle Hospital Selection & 15-Minute Bed Hold
   const handleSelectHospital = async (hospitalId: string, overrideReason?: string) => {
     try {
       const res = await fetch(`/api/patients/${patient?.id || incidentId}/select-hospital`, {
@@ -147,7 +134,6 @@ export default function ParamedicIncidentConsole() {
     }
   };
 
-  // Simulate 1 Route Step (SIM-2)
   const handleSimulateStep = async () => {
     setIsSimulatingStep(true);
     try {
@@ -174,84 +160,70 @@ export default function ParamedicIncidentConsole() {
   };
 
   return (
-    <div className="space-y-8 py-2">
-      {/* 1. Golden Hour Urgency Countdown Banner (INC-4) */}
-      <div className={`p-5 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl ${goldenHour.colorClass}`}>
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-slate-950/60 flex items-center justify-center font-black text-xl">
-            <Clock className="w-7 h-7 stroke-[2.5]" />
+    <div className="space-y-10 py-2">
+      {/* 1. Precision Golden Hour Telemetry */}
+      <div className="p-6 rounded-2xl tactile-panel flex flex-col sm:flex-row items-center justify-between gap-6 border-white/[0.09]">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-zinc-400">
+            <span className="telemetry-pip bg-[#FF2A44] shadow-[0_0_8px_#FF2A44]" />
+            GOLDEN HOUR TRAUMA WINDOW
           </div>
-          <div>
-            <span className="text-[11px] font-black uppercase tracking-widest block opacity-90">
-              GOLDEN HOUR TRAUMA WINDOW (INC-4)
-            </span>
-            <div className="text-3xl sm:text-4xl font-black tracking-tight leading-none">
-              {goldenHour.formattedRemaining}
-            </div>
+          <div className="font-mono text-4xl sm:text-5xl font-light text-white tracking-tight">
+            {goldenHour.formattedRemaining}
           </div>
         </div>
 
-        <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-          <div className="w-40 sm:w-56 bg-slate-950/60 rounded-full h-3 p-0.5 overflow-hidden border border-white/20">
+        <div className="w-full sm:w-72 space-y-2">
+          <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
             <div
-              className="bg-current h-2 rounded-full transition-all duration-1000"
+              className="bg-white h-full transition-all duration-1000"
               style={{ width: `${goldenHour.percentageElapsed}%` }}
             />
           </div>
-          <span className="text-xs font-bold whitespace-nowrap">
-            {goldenHour.percentageElapsed}% Elapsed
-          </span>
+          <div className="flex justify-between font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+            <span>Elapsed: {goldenHour.percentageElapsed}%</span>
+            <span>Limit: 60 MIN</span>
+          </div>
         </div>
       </div>
 
-      {/* 2. Top Header: Incident Identity & Lifecycle Steppers (INC-3) */}
-      <div className="p-6 rounded-2xl glass-panel border-slate-800 space-y-6">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400">
-              <ShieldAlert className="w-6 h-6" />
+      {/* 2. Incident Header & Lifecycle Progress Bar */}
+      <div className="p-6 rounded-2xl tactile-panel space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/[0.08] pb-6">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs uppercase tracking-wider text-zinc-400">
+                INCIDENT ID: {incidentId}
+              </span>
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded border border-white/20 text-white">
+                {patient?.triage?.toUpperCase() || 'RED'} SEVERITY
+              </span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="badge-triage-red px-2.5 py-0.5 rounded-full text-xs font-black uppercase">
-                  {patient?.triage || 'RED'} SEVERITY
-                </span>
-                <span className="text-xs text-slate-400 font-bold">
-                  {incident?.type?.replace('_', ' ').toUpperCase() || 'ROAD ACCIDENT'}
-                </span>
-              </div>
-              <h1 className="text-2xl font-black text-white tracking-tight mt-1">
-                Incident #{incidentId.slice(-8)}
-              </h1>
-            </div>
+            <h1 className="text-2xl font-normal text-white">
+              {incident?.type?.replace('_', ' ').toUpperCase() || 'TRAUMA INCIDENT'}
+            </h1>
           </div>
 
-          {/* Assigned Ambulance Callout */}
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs">
-            <AmbulanceIcon className="w-5 h-5 text-cyan-400" />
-            <div>
-              <span className="font-bold text-slate-200 block">
-                Assigned Unit: {ambulance?.callsign || 'Apex-101'}
-              </span>
-              <span className="text-slate-400 capitalize">Status: {ambulance?.status || 'Assigned'}</span>
+          <div className="flex items-center gap-4 text-xs font-mono">
+            <div className="text-right">
+              <div className="text-zinc-500 uppercase text-[10px]">Fleet Unit</div>
+              <div className="text-white font-medium">{ambulance?.callsign || 'Apex-101'}</div>
             </div>
             <button
               type="button"
               onClick={handleSimulateStep}
               disabled={isSimulatingStep}
-              className="touch-target ml-2 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black flex items-center gap-1.5 text-xs active:scale-95 transition-all"
-              title="Advances simulated ambulance along OSRM route"
+              className="touch-target px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-white/15 text-white font-mono text-xs uppercase tracking-wider active:scale-95 transition-all"
             >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              <span>{isSimulatingStep ? 'Stepping...' : 'Simulate 1 Step'}</span>
+              {isSimulatingStep ? 'Stepping...' : 'Simulate 1 Step →'}
             </button>
           </div>
         </div>
 
-        {/* Lifecycle State Buttons (INC-3) */}
+        {/* Lifecycle Buttons */}
         <div className="space-y-2">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
-            Incident Lifecycle Progression
+          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 block">
+            Lifecycle Progress
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
             {LIFECYCLE_ORDER.map((step) => {
@@ -266,16 +238,15 @@ export default function ParamedicIncidentConsole() {
                   key={step}
                   type="button"
                   onClick={() => handleTransitionStatus(step)}
-                  className={`touch-target p-3 rounded-xl border text-center text-xs font-bold capitalize transition-all ${
+                  className={`touch-target p-3 rounded-lg border font-mono text-xs uppercase tracking-wider transition-all ${
                     isCurrent
-                      ? 'bg-cyan-500 text-slate-950 border-white shadow-lg shadow-cyan-500/25 font-black scale-105'
+                      ? 'bg-white text-black border-white font-bold'
                       : isPast
-                      ? 'bg-slate-900 border-emerald-500/50 text-emerald-300'
-                      : 'bg-slate-900/50 border-slate-800 text-slate-500 hover:text-slate-300'
+                      ? 'bg-zinc-900 border-white/20 text-white'
+                      : 'bg-zinc-950/60 border-white/[0.06] text-zinc-600 hover:text-zinc-400'
                   }`}
                 >
-                  <span className="block truncate">{step.replace('_', ' ')}</span>
-                  {isPast && !isCurrent && <CheckCircle2 className="w-3.5 h-3.5 mx-auto mt-1 text-emerald-400" />}
+                  {step.replace('_', ' ')}
                 </button>
               );
             })}
@@ -283,7 +254,7 @@ export default function ParamedicIncidentConsole() {
         </div>
       </div>
 
-      {/* 3. Interactive Leaflet / Tactical Map (CC-1) */}
+      {/* 3. Tactical Map Display */}
       <EmergencyMap
         hospitals={MOCK_HOSPITALS}
         ambulances={allAmbulances}
@@ -292,16 +263,12 @@ export default function ParamedicIncidentConsole() {
         activeAmbulanceId={ambulance?.id || 'amb-101'}
       />
 
-      {/* 4. Integrated Hospital Recommendations & Factor Breakdown (HM-4, HM-5, HM-8) */}
-      <div className="p-6 rounded-2xl glass-panel border-slate-800 space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-2.5">
-            <Activity className="w-5 h-5 text-cyan-400" />
-            <h2 className="text-lg font-black text-white tracking-wide">
-              Capability-Aware Destination Routing
-            </h2>
-          </div>
-          <span className="text-xs text-slate-400">Live 15-Minute Bed Hold Engine</span>
+      {/* 4. Explainable Capability Recommendation List */}
+      <div className="p-6 rounded-2xl tactile-panel space-y-6">
+        <div className="border-b border-white/[0.08] pb-4">
+          <h2 className="font-mono text-xs uppercase tracking-widest text-zinc-400">
+            Capability-Aware Destination Routing
+          </h2>
         </div>
 
         <HospitalRecommendationList

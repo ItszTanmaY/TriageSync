@@ -2,16 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  ShieldAlert,
-  MapPin,
-  Ambulance as AmbulanceIcon,
-  Plus,
-  Minus,
-  Sparkles,
-  ArrowRight,
-  RefreshCw,
-} from 'lucide-react';
 import { IncidentType, TriageLevel } from '@/lib/types/database';
 import { PUNE_CENTER } from '@/lib/config';
 import { findNearestAvailableAmbulance } from '@/lib/incident/service';
@@ -33,7 +23,6 @@ export default function NewIncidentPage() {
     eta: 4,
   });
 
-  // Auto-detect GPS on load (INC-1)
   useEffect(() => {
     if (navigator.geolocation) {
       setIsDetectingGps(true);
@@ -95,177 +84,173 @@ export default function NewIncidentPage() {
     }
   };
 
-  const INCIDENT_TYPES: { type: IncidentType; label: string; icon: string }[] = [
-    { type: 'road_accident', label: 'Road Accident / Trauma', icon: '💥' },
-    { type: 'cardiac', label: 'Cardiac Arrest / STEMI', icon: '❤️' },
-    { type: 'stroke', label: 'Stroke / Neuro Emergency', icon: '🧠' },
-    { type: 'burns', label: 'Severe Burns', icon: '🔥' },
-    { type: 'obstetric', label: 'Obstetric / Labor', icon: '👶' },
-    { type: 'paediatric', label: 'Paediatric Emergency', icon: '🍼' },
-    { type: 'other', label: 'General / Other Trauma', icon: '🚨' },
+  const INCIDENT_TYPES: { type: IncidentType; code: string; label: string }[] = [
+    { type: 'road_accident', code: '01', label: 'Trauma / Road Accident' },
+    { type: 'cardiac', code: '02', label: 'Cardiac Arrest / STEMI' },
+    { type: 'stroke', code: '03', label: 'Acute Stroke / Neuro' },
+    { type: 'burns', code: '04', label: 'Severe Burns' },
+    { type: 'obstetric', code: '05', label: 'Obstetric Emergency' },
+    { type: 'paediatric', code: '06', label: 'Paediatric Critical Care' },
+    { type: 'other', code: '07', label: 'General / Other Emergency' },
   ];
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 py-4">
-      {/* 1-Handed Emergency Header */}
-      <div className="p-6 rounded-3xl glass-panel-glow border-red-500/40 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] font-black uppercase tracking-widest text-red-400 flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
-            1-HANDED PARAMEDIC FLOW (INC-1)
-          </span>
-          <span className="text-xs font-bold text-slate-400">Touch targets &ge; 48px</span>
+    <div className="max-w-2xl mx-auto space-y-8 py-4">
+      {/* Editorial Header */}
+      <div className="space-y-2 border-b border-white/[0.08] pb-6">
+        <div className="font-mono text-[11px] uppercase tracking-widest text-zinc-400">
+          PARAMEDIC INCIDENT DISPATCH / SEC 01
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-          Report Emergency Incident
+        <h1 className="text-3xl sm:text-4xl font-normal text-white tracking-tight">
+          Report Emergency
         </h1>
-        <p className="text-xs text-slate-300">
-          Fast triage classification, auto-GPS capture, and nearest ambulance suggestion.
+        <p className="text-sm text-zinc-400 font-normal">
+          One-handed rapid triage reporting with automatic nearest fleet assignment.
         </p>
       </div>
 
-      {/* Main Incident Form */}
-      <div className="p-6 sm:p-8 rounded-3xl glass-panel border-slate-800 space-y-6">
-        {/* 1. Emergency Type Chips */}
-        <div className="space-y-2.5">
-          <label className="text-xs font-black text-slate-300 uppercase tracking-wider block">
-            1. Select Incident Type (Maps Capabilities per HM-3)
+      <div className="space-y-8">
+        {/* 1. Incident Type Selection (Clean Typographic Grid) */}
+        <div className="space-y-3">
+          <label className="font-mono text-xs uppercase tracking-wider text-zinc-400 block">
+            Select Condition Class
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {INCIDENT_TYPES.map(({ type: t, label, icon }) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setType(t)}
-                className={`touch-target p-3.5 rounded-xl border text-left flex items-center gap-3 transition-all ${
-                  type === t
-                    ? 'bg-cyan-500 text-slate-950 font-black border-white shadow-lg shadow-cyan-500/30'
-                    : 'bg-slate-900/80 text-slate-300 font-bold border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                <span className="text-lg">{icon}</span>
-                <span className="text-xs">{label}</span>
-              </button>
-            ))}
+            {INCIDENT_TYPES.map(({ type: t, code, label }) => {
+              const isSelected = type === t;
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setType(t)}
+                  className={`touch-target p-4 rounded-xl text-left flex items-center justify-between border transition-all ${
+                    isSelected
+                      ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.15)] font-semibold'
+                      : 'bg-zinc-950/80 text-zinc-300 border-white/[0.08] hover:border-white/20'
+                  }`}
+                >
+                  <span className="text-sm">{label}</span>
+                  <span className={`font-mono text-xs ${isSelected ? 'text-zinc-600' : 'text-zinc-500'}`}>
+                    {code}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* 2. Triage Level Selector */}
-        <div className="space-y-2.5 pt-2">
-          <label className="text-xs font-black text-slate-300 uppercase tracking-wider block">
-            2. Initial Triage Severity (START Framework)
+        {/* 2. Triage Severity Selector */}
+        <div className="space-y-3">
+          <label className="font-mono text-xs uppercase tracking-wider text-zinc-400 block">
+            Initial Triage Severity (START Framework)
           </label>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { level: 'red' as TriageLevel, label: 'RED (IMMEDIATE)', desc: 'Life-Threatening', color: 'badge-triage-red' },
-              { level: 'yellow' as TriageLevel, label: 'YELLOW (DELAYED)', desc: 'Serious / Stable', color: 'badge-triage-yellow' },
-              { level: 'green' as TriageLevel, label: 'GREEN (MINOR)', desc: 'Walking Wounded', color: 'badge-triage-green' },
-            ].map(({ level, label, desc, color }) => (
-              <button
-                key={level}
-                type="button"
-                onClick={() => setTriage(level)}
-                className={`touch-target p-3.5 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${
-                  triage === level
-                    ? `${color} ring-2 ring-white/60 font-black scale-105`
-                    : 'bg-slate-900/60 border-slate-800 text-slate-400 font-semibold opacity-70'
-                }`}
-              >
-                <span className="text-xs">{label}</span>
-                <span className="text-[10px] mt-0.5 opacity-80">{desc}</span>
-              </button>
-            ))}
+              { level: 'red' as TriageLevel, label: 'RED', sub: 'Immediate', color: 'bg-[#FF2A44]', border: 'border-[#FF2A44]' },
+              { level: 'yellow' as TriageLevel, label: 'YELLOW', sub: 'Delayed', color: 'bg-[#FFB020]', border: 'border-[#FFB020]' },
+              { level: 'green' as TriageLevel, label: 'GREEN', sub: 'Minor', color: 'bg-[#00E599]', border: 'border-[#00E599]' },
+            ].map(({ level, label, sub, color, border }) => {
+              const isSelected = triage === level;
+              return (
+                <button
+                  key={level}
+                  type="button"
+                  onClick={() => setTriage(level)}
+                  className={`touch-target p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${
+                    isSelected
+                      ? `bg-zinc-900 ${border} text-white ring-1 ring-white/20`
+                      : 'bg-zinc-950/60 border-white/[0.08] text-zinc-400 hover:border-white/15'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`telemetry-pip ${color}`} />
+                    <span className="font-mono text-xs font-semibold">{label}</span>
+                  </div>
+                  <span className="text-[11px] text-zinc-500 mt-1">{sub}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* 3. Patient Count & GPS Location */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-          {/* Patient Count */}
-          <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-            <span className="text-xs font-bold text-slate-400 uppercase">Patient Count</span>
-            <div className="flex items-center justify-between">
+        {/* 3. Patient Count & GPS Telemetry */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-4 rounded-xl tactile-panel space-y-2">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block">
+              Patient Count
+            </span>
+            <div className="flex items-center justify-between pt-1">
               <button
                 type="button"
                 onClick={() => setPatientCount(Math.max(1, patientCount - 1))}
-                className="touch-target w-11 h-11 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center font-bold"
+                className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
               >
-                <Minus className="w-5 h-5" />
+                -
               </button>
-              <span className="text-2xl font-black text-white">{patientCount}</span>
+              <span className="font-mono text-3xl font-light text-white">{patientCount}</span>
               <button
                 type="button"
                 onClick={() => setPatientCount(patientCount + 1)}
-                className="touch-target w-11 h-11 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 flex items-center justify-center font-bold"
+                className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
               >
-                <Plus className="w-5 h-5" />
+                +
               </button>
             </div>
           </div>
 
-          {/* GPS Coordinates */}
-          <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <div className="p-4 rounded-xl tactile-panel space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400 uppercase">GPS Location</span>
+              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block">
+                GPS Coordinate
+              </span>
               {isDetectingGps && (
-                <span className="text-[10px] text-cyan-400 flex items-center gap-1 font-semibold">
-                  <RefreshCw className="w-3 h-3 animate-spin" />
-                  Detecting...
-                </span>
+                <span className="font-mono text-[10px] text-zinc-500">Detecting...</span>
               )}
             </div>
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-200">
-              <MapPin className="w-4 h-4 text-red-400" />
-              <span>{latitude.toFixed(4)}, {longitude.toFixed(4)} (Pune)</span>
+            <div className="font-mono text-base font-normal text-white pt-2">
+              {latitude.toFixed(4)}, {longitude.toFixed(4)}
             </div>
+            <span className="font-mono text-[11px] text-zinc-500 block">Pune Central Sector</span>
           </div>
         </div>
 
         {/* 4. Optional Linked MedPass Token */}
-        <div className="space-y-1.5 pt-2">
-          <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            Link Patient MedPass (Optional QR Token)
+        <div className="space-y-2">
+          <label className="font-mono text-xs uppercase tracking-wider text-zinc-400 block">
+            Link MedPass Token (Optional)
           </label>
           <input
             type="text"
             value={medpassToken}
             onChange={(e) => setMedpassToken(e.target.value)}
-            placeholder="e.g. tok_asha_k_9901"
-            className="touch-target w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            placeholder="tok_..."
+            className="touch-target w-full px-4 py-3 bg-zinc-950 border border-white/10 rounded-xl font-mono text-xs text-white focus:outline-none focus:border-white/40"
           />
         </div>
 
-        {/* Auto-suggested Ambulance (INC-5) */}
+        {/* Auto-suggested Ambulance (Monochrome Telemetry) */}
         {suggestedAmbulance && (
-          <div className="p-4 rounded-xl bg-cyan-950/40 border border-cyan-500/40 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
-                <AmbulanceIcon className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="font-bold text-slate-300 block">Auto-Assigned Nearest Ambulance</span>
-                <span className="font-black text-cyan-300">
-                  {suggestedAmbulance.callsign} • ETA ~{suggestedAmbulance.eta} min to scene
-                </span>
-              </div>
+          <div className="p-4 rounded-xl border border-white/[0.08] bg-zinc-950/40 flex items-center justify-between text-xs font-mono">
+            <div>
+              <span className="text-zinc-500 block uppercase text-[10px]">Auto-Assigned Fleet Unit</span>
+              <span className="text-white font-medium text-sm">
+                {suggestedAmbulance.callsign} — ETA ~{suggestedAmbulance.eta} MIN
+              </span>
             </div>
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-cyan-900 text-cyan-200 border border-cyan-700 uppercase">
-              SUGGESTED
-            </span>
+            <span className="telemetry-pip bg-[#00E5FF] shadow-[0_0_6px_#00E5FF]" />
           </div>
         )}
 
-        {/* Launch Button */}
-        <div className="pt-4 border-t border-slate-800">
+        {/* Primary Action Button */}
+        <div className="pt-4">
           <button
             type="button"
             onClick={handleCreateIncident}
             disabled={isSubmitting}
-            className="touch-target w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-base tracking-wide shadow-2xl shadow-red-600/40 active:scale-95 transition-all flex items-center justify-center gap-2"
+            className="touch-target w-full py-4 px-6 rounded-xl bg-white hover:bg-zinc-200 text-black font-mono font-semibold text-xs uppercase tracking-widest transition-all shadow-[0_0_25px_rgba(255,255,255,0.2)] active:scale-[0.99] flex items-center justify-center gap-3"
           >
-            <ShieldAlert className="w-6 h-6 animate-pulse" />
-            <span>{isSubmitting ? 'Launching Emergency Grid...' : 'LAUNCH EMERGENCY INCIDENT & DISPATCH'}</span>
-            <ArrowRight className="w-5 h-5" />
+            <span>{isSubmitting ? 'DISPATCHING EMERGENCY GRID...' : 'DISPATCH EMERGENCY & RESERVE HOSPITAL'}</span>
+            <span className="font-sans font-bold text-sm">→</span>
           </button>
         </div>
       </div>

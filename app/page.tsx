@@ -1,284 +1,208 @@
 import Link from "next/link";
-import {
-  ShieldAlert,
-  QrCode,
-  Radio,
-  Ambulance,
-  HeartPulse,
-  Flame,
-  ArrowRight,
-  Zap,
-  Activity,
-  Layers,
-  Lock,
-  WifiOff,
-} from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="space-y-10 py-4">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl p-8 sm:p-12 glass-panel-glow border-cyan-500/30">
-        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 max-w-3xl space-y-6">
-          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-cyan-950/90 border border-cyan-500/40 text-cyan-300 text-xs font-bold tracking-wide">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-            AUTONOMOUS EMERGENCY COORDINATION & MEDPASS 2.0
+    <div className="space-y-16 py-4">
+      {/* Editorial Hero Section */}
+      <section className="relative pt-6 pb-12 border-b border-white/[0.08]">
+        <div className="max-w-4xl space-y-8">
+          <div className="inline-flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-widest text-zinc-400">
+            <span className="telemetry-pip bg-[#00E599] shadow-[0_0_6px_#00E599]" />
+            AUTONOMOUS EMERGENCY DISPATCH & IDENTITY ARCHITECTURE
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white leading-[1.1]">
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-medium tracking-tight text-white leading-[0.95]">
             Right patient. <br />
             Right hospital. <br />
-            <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent">
-              Right now.
-            </span>
+            <span className="text-zinc-500">Right now.</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate-300 leading-relaxed font-normal">
+          <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl font-normal leading-relaxed">
             Eliminating the identity gap and hospital dead-ends during the golden hour.
-            Powered by capability-aware routing, QueuePredict load balancing, offline-verifiable
-            Ed25519 identity, and hands-free voice handover.
+            Engineered with capability-aware routing, QueuePredict load balancing, and offline-verifiable Ed25519 identity cards.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-4">
             <Link
               href="/incident/new"
-              className="touch-target inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 shadow-lg shadow-cyan-500/25 transition-all text-sm tracking-wide gap-2"
+              className="touch-target px-8 py-3.5 rounded-xl font-mono text-xs uppercase tracking-wider font-semibold text-black bg-white hover:bg-zinc-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] flex items-center gap-2"
             >
-              <Ambulance className="w-5 h-5" />
-              Launch Emergency Incident
-              <ArrowRight className="w-4 h-4" />
+              <span>Launch Emergency</span>
+              <span className="font-sans font-bold">→</span>
             </Link>
 
             <Link
               href="/hospital/dashboard"
-              className="touch-target inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-slate-200 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 transition-all text-sm tracking-wide gap-2"
+              className="touch-target px-8 py-3.5 rounded-xl font-mono text-xs uppercase tracking-wider font-semibold text-zinc-300 bg-zinc-900/60 hover:bg-zinc-800 border border-white/10 transition-all flex items-center gap-2"
             >
-              <Radio className="w-5 h-5 text-emerald-400" />
-              Hospital ER Radar
+              <span>Hospital ER Radar</span>
+              <span className="font-sans font-bold">→</span>
             </Link>
           </div>
         </div>
 
-        {/* Live Grid Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 pt-8 border-t border-slate-800/80">
+        {/* Precision Telemetry Bar */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-8 border-t border-white/[0.06] font-mono">
           <div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-cyan-400">10</div>
-            <div className="text-xs text-slate-400 font-medium">Pune Hospitals Tracked</div>
+            <div className="text-3xl font-normal text-white tracking-tight">10</div>
+            <div className="text-[11px] text-zinc-500 uppercase tracking-widest mt-1">Hospitals Tracked</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400">100%</div>
-            <div className="text-xs text-slate-400 font-medium">Offline Ed25519 Verified</div>
+            <div className="text-3xl font-normal text-white tracking-tight">&lt; 2.0s</div>
+            <div className="text-[11px] text-zinc-500 uppercase tracking-widest mt-1">Scoring Latency</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-amber-400">&lt; 2.0s</div>
-            <div className="text-xs text-slate-400 font-medium">Capability Match Latency</div>
+            <div className="text-3xl font-normal text-white tracking-tight">Ed25519</div>
+            <div className="text-[11px] text-zinc-500 uppercase tracking-widest mt-1">Offline Payload</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-white">0</div>
-            <div className="text-xs text-slate-400 font-medium">Dead-Ends Tolerated</div>
+            <div className="text-3xl font-normal text-white tracking-tight">100%</div>
+            <div className="text-[11px] text-zinc-500 uppercase tracking-widest mt-1">Explainable Factor Breakdown</div>
           </div>
         </div>
       </section>
 
-      {/* 5 Core Portals Grid */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-            <Layers className="w-6 h-6 text-cyan-400" />
-            Emergency Role Portals
+      {/* Core Architectural Portals Grid */}
+      <section className="space-y-6">
+        <div className="flex items-baseline justify-between border-b border-white/[0.08] pb-4">
+          <h2 className="font-mono text-xs uppercase tracking-widest text-zinc-400">
+            System Portals & Operations
           </h2>
-          <span className="text-xs text-slate-400 font-medium">5 Specialized Workflows</span>
+          <span className="font-mono text-[11px] text-zinc-400">SELECT OPERATIONAL WORKFLOW</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* 1. Bystander Scan */}
           <Link
             href="/s/tok_asha_k_9901"
-            className="group block p-6 rounded-2xl glass-panel glass-card-interactive border-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
-                <QrCode className="w-6 h-6" />
+            <div>
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+                <span>01 / Scan</span>
+                <span className="text-[#00E599]">Zero Login Required</span>
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-red-950/60 text-red-400 border border-red-800/40">
-                NO LOGIN REQUIRED
-              </span>
+              <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
+                Bystander Scan & Alert
+              </h3>
+              <p className="text-sm text-zinc-400 mt-2 leading-relaxed">
+                Instant critical medical identity verification via offline Ed25519 signature in URL hash fragment.
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
-              Bystander Scan & Alert
-            </h3>
-            <p className="text-sm text-slate-400 mt-2 line-clamp-2">
-              Instant critical identity read from QR payload, zero app install, offline cryptographic verification.
-            </p>
-            <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
-              <span>Demo Asha Kulkarni QR</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <div className="mt-6 flex items-center justify-between font-mono text-xs text-zinc-400 group-hover:text-white transition-colors">
+              <span>Open Asha Kulkarni Record</span>
+              <span className="text-base group-hover:translate-x-1 transition-transform">→</span>
             </div>
           </Link>
 
           {/* 2. Paramedic Incident */}
           <Link
             href="/incident/new"
-            className="group block p-6 rounded-2xl glass-panel glass-card-interactive border-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
-                <Ambulance className="w-6 h-6" />
+            <div>
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+                <span>02 / Dispatch</span>
+                <span>Paramedic Console</span>
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-cyan-950/60 text-cyan-300 border border-cyan-800/40">
-                1-HANDED FLOW
-              </span>
+              <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
+                Report Emergency
+              </h3>
+              <p className="text-sm text-zinc-400 mt-2 leading-relaxed">
+                One-handed mobile triage reporting, GPS coordinates, capability matching, and nearest ambulance dispatch.
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
-              Paramedic Command
-            </h3>
-            <p className="text-sm text-slate-400 mt-2 line-clamp-2">
-              Create incident, capability-matched top 3 hospital ranking with factor explanations and 15-min bed reservation.
-            </p>
-            <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
-              <span>Start Incident</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <div className="mt-6 flex items-center justify-between font-mono text-xs text-zinc-400 group-hover:text-white transition-colors">
+              <span>Launch Incident</span>
+              <span className="text-base group-hover:translate-x-1 transition-transform">→</span>
             </div>
           </Link>
 
           {/* 3. Hospital ER Staff */}
           <Link
             href="/hospital/dashboard"
-            className="group block p-6 rounded-2xl glass-panel glass-card-interactive border-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                <Radio className="w-6 h-6" />
+            <div>
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+                <span>03 / Telemetry</span>
+                <span className="text-[#00E599]">Live Steppers</span>
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-950/60 text-emerald-300 border border-emerald-800/40">
-                1-TAP UPDATES
-              </span>
+              <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
+                Hospital ER Dashboard
+              </h3>
+              <p className="text-sm text-zinc-400 mt-2 leading-relaxed">
+                Tactile steppers for ICU and ER beds, equipment toggles, blood stock per group, and inbound patient radar.
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">
-              Hospital ER Dashboard
-            </h3>
-            <p className="text-sm text-slate-400 mt-2 line-clamp-2">
-              Steppers for ICU/ER beds, ventilators, blood stock, and incoming patient cards with SBAR briefs and prep checklists.
-            </p>
-            <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
-              <span>Open ER Command</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <div className="mt-6 flex items-center justify-between font-mono text-xs text-zinc-400 group-hover:text-white transition-colors">
+              <span>Manage Hospital State</span>
+              <span className="text-base group-hover:translate-x-1 transition-transform">→</span>
             </div>
           </Link>
 
           {/* 4. MedPass Citizen Card */}
           <Link
             href="/medpass"
-            className="group block p-6 rounded-2xl glass-panel glass-card-interactive border-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                <HeartPulse className="w-6 h-6" />
+            <div>
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+                <span>04 / Identity</span>
+                <span>Citizen Wallet</span>
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-blue-950/60 text-blue-300 border border-blue-800/40">
-                OFFLINE WALLET
-              </span>
+              <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
+                MedPass Generator
+              </h3>
+              <p className="text-sm text-zinc-400 mt-2 leading-relaxed">
+                Generate signed digital wallet cards, export high-resolution wallpaper images, and review scan audit trails.
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">
-              MedPass Generator & Card
-            </h3>
-            <p className="text-sm text-slate-400 mt-2 line-clamp-2">
-              Create medical identity, configure emergency contacts, export wallet and lock-screen wallpaper, view scan audit logs.
-            </p>
-            <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-blue-400">
-              <span>Manage MedPass</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <div className="mt-6 flex items-center justify-between font-mono text-xs text-zinc-400 group-hover:text-white transition-colors">
+              <span>Open MedPass Hub</span>
+              <span className="text-base group-hover:translate-x-1 transition-transform">→</span>
             </div>
           </Link>
 
-          {/* 5. City Command & Dispatcher */}
+          {/* 5. Active Incident Console */}
           <Link
-            href="/command"
-            className="group block p-6 rounded-2xl glass-panel glass-card-interactive border-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            href="/incident/demo-01"
+            className="group p-6 rounded-2xl tactile-panel tactile-panel-hover flex flex-col justify-between min-h-[220px]"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
-                <ShieldAlert className="w-6 h-6" />
+            <div>
+              <div className="flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+                <span>05 / Live Grid</span>
+                <span className="text-[#FF2A44]">Golden Hour Active</span>
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-950/60 text-amber-300 border border-amber-800/40">
-                CITY-WIDE GRID
-              </span>
+              <h3 className="text-xl font-medium text-white group-hover:text-zinc-200 transition-colors">
+                Paramedic Tactical Console
+              </h3>
+              <p className="text-sm text-zinc-400 mt-2 leading-relaxed">
+                Live 60-minute countdown timer, tactical vector map, route simulation, and 15-minute bed hold reservation.
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors">
-              Dispatcher Command Center
-            </h3>
-            <p className="text-sm text-slate-400 mt-2 line-clamp-2">
-              City map with active ambulances, hospital capacity heatmaps, mass-casualty distribution, and diversion analytics.
-            </p>
-            <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-amber-400">
-              <span>View City Map</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <div className="mt-6 flex items-center justify-between font-mono text-xs text-zinc-400 group-hover:text-white transition-colors">
+              <span>View Active Incident</span>
+              <span className="text-base group-hover:translate-x-1 transition-transform">→</span>
             </div>
           </Link>
 
-          {/* 6. Demo Script & Chaos Runner */}
-          <Link
-            href="/demo"
-            className="group block p-6 rounded-2xl glass-panel glass-card-interactive border-purple-500/30 bg-purple-950/10 focus:outline-none focus:ring-2 focus:ring-purple-400"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                <Flame className="w-6 h-6" />
+          {/* 6. Architectural Differentiators */}
+          <div className="p-6 rounded-2xl border border-white/[0.08] bg-zinc-950/40 flex flex-col justify-between min-h-[220px]">
+            <div>
+              <div className="font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-4">
+                06 / Compliance
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-purple-950/60 text-purple-300 border border-purple-800/40">
-                JUDGES & CHAOS
-              </span>
+              <h3 className="text-xl font-medium text-white">
+                DPDP & IEEE Standard
+              </h3>
+              <p className="text-sm text-zinc-400 mt-2 leading-relaxed">
+                Tiered access architecture: critical data public, full health records verified and logged in immutable audit trails.
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
-              Live Demo & Chaos Console
-            </h3>
-            <p className="text-sm text-slate-400 mt-2 line-clamp-2">
-              1-click test cases: fill ICU, kill network, surge 3 ambulances to trigger diversion, reset seed data.
-            </p>
-            <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-purple-400">
-              <span>Open Chaos Console</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <div className="mt-6 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
+              Zero-Trust Architecture
             </div>
-          </Link>
-        </div>
-      </section>
-
-      {/* Key Architectural Differentiators */}
-      <section className="p-8 rounded-2xl glass-panel border-slate-800 space-y-6">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <Zap className="w-5 h-5 text-cyan-400" />
-          Technical Differentiators for Evaluation
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-300">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 font-bold text-cyan-300">
-              <Activity className="w-4 h-4" />
-              Explainable Capability Matching
-            </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Not just nearest distance. Maps clinical requirement matrices (trauma bay, OT, blood, cath lab) and exposes factor scores so paramedics understand why a hospital was picked.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 font-bold text-emerald-300">
-              <WifiOff className="w-4 h-4" />
-              Offline-First & ResilientLink
-            </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Signed Ed25519 critical tier decoded in airplane mode from URL hash fragment. IndexedDB outbox flushes automatically on reconnect with idempotent client UUIDs.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 font-bold text-purple-300">
-              <Lock className="w-4 h-4" />
-              Privacy-Tiered & Audit-Logged
-            </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Lock-screen critical tier is public; full medical history requires verified responder login or contact OTP. Every scan is cryptographically logged and visible to the patient.
-            </p>
           </div>
         </div>
       </section>

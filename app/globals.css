@@ -4,33 +4,33 @@
 
 @layer base {
   :root {
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
+    --background: 240 10% 2%;
+    --foreground: 0 0% 98%;
 
-    --card: 222 47% 7%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 8% 4%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222 47% 6%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 8% 4%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 187 100% 50%;
-    --primary-foreground: 222 47% 4%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 10% 2%;
 
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 5% 10%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 217 33% 14%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 240 5% 12%;
+    --muted-foreground: 240 5% 65%;
 
-    --accent: 152 100% 50%;
-    --accent-foreground: 222 47% 4%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 240 10% 2%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 354 100% 58%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 187 100% 50%;
+    --border: 240 5% 12%;
+    --input: 240 5% 12%;
+    --ring: 0 0% 100%;
 
     --radius: 0.75rem;
   }
@@ -41,18 +41,18 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-cyan-500/20 selection:text-cyan-300;
-    font-feature-settings: "rlig" 1, "calt" 1, "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1;
-    background-color: #040711;
+    @apply bg-background text-foreground antialiased;
+    background-color: #040406;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 50%),
-      radial-gradient(at 50% 50%, rgba(15, 23, 42, 0.8) 0px, transparent 100%);
+      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 100% 100%, 48px 48px, 48px 48px;
     background-attachment: fixed;
     min-height: 100vh;
+    letter-spacing: -0.011em;
   }
 
-  /* Accessible touch targets requirement: >= 48px */
   button, 
   a, 
   input[type="button"], 
@@ -64,69 +64,58 @@
   }
 }
 
-/* Glassmorphism & High-contrast Medical UI classes */
-.glass-panel {
-  background: rgba(13, 19, 33, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+/* Awwwards Precision Editorial Utilities */
+.tactile-panel {
+  background: rgba(10, 10, 12, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.glass-panel-glow {
-  background: rgba(13, 19, 33, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 240, 255, 0.25);
-  box-shadow: 0 0 25px -5px rgba(0, 240, 255, 0.15), 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+.tactile-panel-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tactile-panel-hover:hover {
+  background: rgba(15, 15, 18, 0.9);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
-.glass-card-interactive {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.tactile-button {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
 }
-.glass-card-interactive:hover {
-  transform: translateY(-2px);
-  border-color: rgba(0, 240, 255, 0.4);
-  box-shadow: 0 12px 30px -8px rgba(0, 240, 255, 0.2);
+.tactile-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
 }
-
-/* Triage glow pills */
-.badge-triage-red {
-  background: rgba(239, 68, 68, 0.18);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.45);
-}
-
-.badge-triage-yellow {
-  background: rgba(245, 158, 11, 0.18);
-  color: #fde68a;
-  border: 1px solid rgba(245, 158, 11, 0.45);
+.tactile-button:active {
+  transform: scale(0.98);
 }
 
-.badge-triage-green {
-  background: rgba(16, 185, 129, 0.18);
-  color: #6ee7b7;
-  border: 1px solid rgba(16, 185, 129, 0.45);
-}
-
-.badge-triage-black {
-  background: rgba(100, 116, 139, 0.2);
-  color: #cbd5e1;
-  border: 1px solid rgba(100, 116, 139, 0.4);
-}
-
-/* Custom subtle scrollbars */
-::-webkit-scrollbar {
+.telemetry-pip {
   width: 6px;
   height: 6px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+/* Minimal scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #070b14;
+  background: #040406;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 9999px;
+  background: #1c1c22;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #2a2a35;
 }

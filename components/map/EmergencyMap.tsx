@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { Hospital, Ambulance, GeoLocation } from '@/lib/types/database';
-import { Building2, Ambulance as AmbulanceIcon, AlertCircle, Navigation } from 'lucide-react';
 
 interface EmergencyMapProps {
   hospitals: Hospital[];
@@ -21,8 +20,6 @@ export function EmergencyMap({
 }: EmergencyMapProps) {
   const [activeTab, setActiveTab] = useState<'grid' | 'fleet'>('grid');
 
-  // Pune bounding box for coordinate mapping:
-  // Lat: ~18.45 to 18.75, Lon: ~73.65 to 73.95
   const minLat = 18.44;
   const maxLat = 18.76;
   const minLon = 73.65;
@@ -40,24 +37,19 @@ export function EmergencyMap({
   const selectedHospital = hospitals.find((h) => h.id === selectedHospitalId);
 
   return (
-    <div className="rounded-2xl glass-panel-glow border-cyan-500/30 overflow-hidden space-y-0">
-      {/* Map Control Bar */}
-      <div className="p-4 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Navigation className="w-5 h-5 text-cyan-400" />
-          <span className="font-black text-sm text-white tracking-wide">
-            Live Tactical Pune Grid (OSM / OSRM Telemetry)
-          </span>
-        </div>
+    <div className="rounded-2xl tactile-panel overflow-hidden">
+      {/* Map Header */}
+      <div className="p-4 bg-black/60 border-b border-white/[0.08] flex items-center justify-between font-mono text-xs">
+        <span className="uppercase tracking-widest text-zinc-400">
+          Pune Sector Telemetry / Vector Map
+        </span>
 
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setActiveTab('grid')}
-            className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${
-              activeTab === 'grid'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/25'
-                : 'bg-slate-900 text-slate-400 hover:text-white'
+            className={`px-3 py-1 rounded-md uppercase tracking-wider transition-colors ${
+              activeTab === 'grid' ? 'bg-white text-black font-semibold' : 'text-zinc-500 hover:text-white'
             }`}
           >
             Hospitals ({hospitals.length})
@@ -65,10 +57,8 @@ export function EmergencyMap({
           <button
             type="button"
             onClick={() => setActiveTab('fleet')}
-            className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${
-              activeTab === 'fleet'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/25'
-                : 'bg-slate-900 text-slate-400 hover:text-white'
+            className={`px-3 py-1 rounded-md uppercase tracking-wider transition-colors ${
+              activeTab === 'fleet' ? 'bg-white text-black font-semibold' : 'text-zinc-500 hover:text-white'
             }`}
           >
             Fleet ({ambulances.length})
@@ -76,22 +66,23 @@ export function EmergencyMap({
         </div>
       </div>
 
-      {/* High-Contrast Tactical Canvas Map */}
-      <div className="relative w-full h-[400px] sm:h-[480px] bg-[#030611] overflow-hidden border-b border-slate-800 select-none">
-        {/* Subtle Map Grid Lines */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:40px_40px] opacity-40 pointer-events-none" />
+      {/* Vector Canvas */}
+      <div className="relative w-full h-[420px] bg-[#020204] overflow-hidden select-none">
+        {/* Hairline Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#111116_1px,transparent_1px),linear-gradient(to_bottom,#111116_1px,transparent_1px)] bg-[size:36px_36px] opacity-60 pointer-events-none" />
 
-        {/* Pune Landmark Water Body Indicator (Mula-Mutha River line) */}
+        {/* River outline */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20">
           <path
             d="M 10 320 Q 250 280, 500 240 T 990 200"
             fill="none"
-            stroke="#0284c7"
-            strokeWidth="8"
+            stroke="#ffffff"
+            strokeWidth="3"
+            strokeDasharray="4 4"
           />
         </svg>
 
-        {/* Dynamic Route Polyline if Incident and Destination are active */}
+        {/* Route Line */}
         {incidentLocation && selectedHospital && (
           <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
             {(() => {
@@ -103,9 +94,9 @@ export function EmergencyMap({
                   y1={`${start.y}%`}
                   x2={`${end.x}%`}
                   y2={`${end.y}%`}
-                  stroke="#00f0ff"
-                  strokeWidth="3"
-                  strokeDasharray="6 4"
+                  stroke="#ffffff"
+                  strokeWidth="2"
+                  strokeDasharray="4 4"
                   className="animate-pulse"
                 />
               );
@@ -113,13 +104,11 @@ export function EmergencyMap({
           </svg>
         )}
 
-        {/* 1. Hospitals Markers */}
+        {/* Hospitals */}
         {hospitals.map((hosp) => {
           const coords = toMapCoords(hosp.location);
           const isSelected = hosp.id === selectedHospitalId;
-          const isFullIcu = hosp.id === 'hosp-003';
-          const isNoTrauma = hosp.id === 'hosp-004';
-          const isExcluded = isFullIcu || isNoTrauma;
+          const isExcluded = hosp.id === 'hosp-003' || hosp.id === 'hosp-004';
 
           return (
             <div
@@ -130,28 +119,23 @@ export function EmergencyMap({
               }`}
             >
               <div
-                className={`relative flex items-center justify-center w-8 h-8 rounded-xl border shadow-lg ${
+                className={`relative w-4 h-4 rounded-full border ${
                   isSelected
-                    ? 'bg-cyan-500 border-white text-slate-950 shadow-cyan-500/50'
+                    ? 'bg-white border-white shadow-[0_0_12px_#ffffff]'
                     : isExcluded
-                    ? 'bg-red-950/80 border-red-500 text-red-300 shadow-red-950/50'
-                    : 'bg-slate-900 border-emerald-500/60 text-emerald-300 shadow-emerald-950/30'
+                    ? 'bg-[#FF2A44] border-[#FF2A44] opacity-50'
+                    : 'bg-[#00E599] border-[#00E599]'
                 }`}
-                title={`${hosp.name} (Level ${hosp.level})`}
-              >
-                <Building2 className="w-4 h-4 stroke-[2.5]" />
-                {isSelected && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-cyan-400 animate-ping" />
-                )}
-              </div>
-              <div className="absolute top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded bg-slate-950/90 border border-slate-800 text-[10px] font-bold text-slate-200 pointer-events-none">
+                title={hosp.name}
+              />
+              <div className="absolute top-5 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded bg-black/90 border border-white/10 font-mono text-[9px] text-zinc-300 pointer-events-none">
                 {hosp.name.split(' ')[0]}
               </div>
             </div>
           );
         })}
 
-        {/* 2. Ambulances Markers */}
+        {/* Ambulances */}
         {ambulances.map((amb) => {
           const coords = toMapCoords(amb.location);
           const isActive = amb.id === activeAmbulanceId;
@@ -160,30 +144,26 @@ export function EmergencyMap({
             <div
               key={amb.id}
               style={{ left: `${coords.x}%`, top: `${coords.y}%` }}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 z-20 transition-transform ${
-                isActive ? 'scale-125 z-30' : 'hover:scale-110'
+              className={`absolute -translate-x-1/2 -translate-y-1/2 z-20 ${
+                isActive ? 'scale-125 z-30' : ''
               }`}
             >
               <div
-                className={`flex items-center justify-center w-7 h-7 rounded-lg border shadow-lg ${
+                className={`w-3 h-3 rotate-45 border ${
                   isActive
-                    ? 'bg-cyan-400 border-white text-slate-950 animate-pulse'
-                    : amb.status === 'en_route'
-                    ? 'bg-amber-500 border-amber-300 text-slate-950'
-                    : 'bg-slate-800 border-slate-600 text-slate-300'
+                    ? 'bg-white border-white animate-pulse'
+                    : 'bg-zinc-700 border-zinc-500'
                 }`}
-                title={`${amb.callsign} (${amb.status})`}
-              >
-                <AmbulanceIcon className="w-3.5 h-3.5 stroke-[2.5]" />
-              </div>
-              <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-bold text-cyan-300 pointer-events-none">
+                title={amb.callsign}
+              />
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[8px] text-zinc-500 pointer-events-none">
                 {amb.callsign}
               </div>
             </div>
           );
         })}
 
-        {/* 3. Incident Location Beacon */}
+        {/* Emergency Incident Site */}
         {incidentLocation && (
           <div
             style={{
@@ -192,43 +172,41 @@ export function EmergencyMap({
             }}
             className="absolute -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none"
           >
-            <div className="relative flex items-center justify-center w-8 h-8">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-              <span className="relative flex items-center justify-center w-6 h-6 rounded-full bg-red-600 text-white shadow-xl shadow-red-600/50">
-                <AlertCircle className="w-4 h-4" />
-              </span>
+            <div className="relative flex items-center justify-center w-6 h-6">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF2A44] opacity-60" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FF2A44] shadow-[0_0_10px_#FF2A44]" />
             </div>
-            <div className="absolute top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-full bg-red-950 border border-red-700 text-[10px] font-black text-red-200">
-              EMERGENCY SITE
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[9px] uppercase px-1.5 py-0.5 bg-black border border-[#FF2A44]/50 text-[#FF2A44]">
+              INCIDENT SITE
             </div>
           </div>
         )}
       </div>
 
-      {/* Legend & Grid Summary Footer */}
-      <div className="p-4 bg-slate-950 text-xs flex flex-wrap items-center justify-between gap-4 text-slate-300">
-        <div className="flex items-center gap-4 flex-wrap">
+      {/* Legend Footer */}
+      <div className="p-3 bg-black/80 font-mono text-[10px] text-zinc-500 flex flex-wrap items-center justify-between gap-4 uppercase tracking-wider">
+        <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-emerald-400 border border-emerald-300" />
+            <span className="telemetry-pip bg-[#00E599]" />
             <span>Hospital Ready</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-red-500 border border-red-400" />
-            <span>Capacity Excluded (Full ICU/No Bay)</span>
+            <span className="telemetry-pip bg-[#FF2A44]" />
+            <span>Capacity Excluded</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-lg bg-cyan-400" />
-            <span>Active Ambulance</span>
+            <span className="w-2 h-2 rotate-45 bg-zinc-400" />
+            <span>Fleet Unit</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-red-500 animate-ping" />
+            <span className="telemetry-pip bg-[#FF2A44] animate-ping" />
             <span>Emergency Site</span>
           </div>
         </div>
 
         {selectedHospital && (
-          <div className="text-cyan-300 font-bold">
-            Target: {selectedHospital.name}
+          <div className="text-white">
+            TARGET: {selectedHospital.name.toUpperCase()}
           </div>
         )}
       </div>
