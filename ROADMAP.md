@@ -126,6 +126,6 @@ Write Playwright tests for the six acceptance criteria in SRS section 9. Fix fai
 5. Keep a `DECISIONS.md` for any deviation from the SRS.
 
 ## Progress checklist
-- [x] P0 Setup  - [ ] P1 Hospital dashboard  - [ ] P2 Matching  - [ ] P3 MedPass
+- [x] P0 Setup  - [x] P1 Hospital dashboard  - [ ] P2 Matching  - [ ] P3 MedPass
 - [ ] P4 Incidents/map  - [ ] P5 QueuePredict  - [ ] P6 Voice  - [ ] P7 Offline/peer
 - [ ] P8 Command/MCI  - [ ] P9 Rehearsal
