@@ -4,6 +4,8 @@ import {
   buildEmergencySmsLink,
   buildEmergencyWhatsAppLink,
   I18N_MEDPASS,
+  getBaseUrl,
+  adaptUrlToCurrentOrigin,
 } from '@/lib/medpass/service';
 import {
   signCriticalPayload,
@@ -100,5 +102,25 @@ describe('Phase 3: Token Revocation & Rotation (MP-8)', () => {
 
     expect(sample!.medpass.public_token).not.toBe(oldToken);
     expect(sample!.medpass.token_version).toBe(oldVersion + 1);
+  });
+});
+
+describe('Phase 3: Dynamic Base URL & Vercel Adaptability (MP-1, MP-3)', () => {
+  it('derives base URL dynamically from reverse proxy / Vercel request headers', () => {
+    const fakeRequest = {
+      headers: new Headers({
+        'x-forwarded-host': 'triagesync.vercel.app',
+        'x-forwarded-proto': 'https',
+      }),
+    };
+
+    const baseUrl = getBaseUrl(fakeRequest);
+    expect(baseUrl).toBe('https://triagesync.vercel.app');
+  });
+
+  it('adapts localhost scan URLs to browser origin or keeps valid target', () => {
+    const rawLocalUrl = 'http://localhost:3000/s/tok_123#payload.sig';
+    // In node environment without window, adaptUrlToCurrentOrigin safely returns rawUrl
+    expect(adaptUrlToCurrentOrigin(rawLocalUrl)).toBe(rawLocalUrl);
   });
 });

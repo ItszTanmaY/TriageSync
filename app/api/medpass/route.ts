@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import QRCode from 'qrcode';
 import { MedPassFormSchema } from '@/lib/validations/schemas';
 import { signCriticalPayload } from '@/lib/qr/signer';
-import { generatePublicToken } from '@/lib/medpass/service';
+import { generatePublicToken, getBaseUrl } from '@/lib/medpass/service';
 import { mockStore, isSupabaseConfigured, supabase } from '@/lib/supabase/client';
 import { MedPass, EmergencyContact } from '@/lib/types/database';
 
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       ts: nowTs,
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getBaseUrl(request);
     const publicScanUrl = `${appUrl}/s/${token}#${signed.hashFragment}`;
 
     // Generate high-resolution QR code
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // Default to the first sample medpass for demo (Asha Kulkarni)
     const sample = mockStore.getMedPassByToken('tok_asha_k_9901');
@@ -123,7 +123,7 @@ export async function GET() {
       return NextResponse.json({ error: 'MedPass not found' }, { status: 404 });
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getBaseUrl(request);
     const publicScanUrl = `${appUrl}/s/${sample.medpass.public_token}#${sample.signedPayloadB64}`;
 
     const qrDataUrl = await QRCode.toDataURL(publicScanUrl, {

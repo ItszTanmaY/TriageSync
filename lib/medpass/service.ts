@@ -20,6 +20,59 @@ export interface MedPassTranslations {
   prototypeNotice: string;
 }
 
+/**
+ * Dynamically resolves the base URL for QR codes and deep links.
+ * Checks request headers (x-forwarded-host, host) for Vercel/proxies,
+ * client window.location.origin, VERCEL_URL, or NEXT_PUBLIC_APP_URL.
+ */
+export function getBaseUrl(request?: Request | { headers?: Headers | { get: (name: string) => string | null } }): string {
+  // 1. Client-side browser execution (always reflects actual URL being viewed)
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+
+  // 2. Incoming HTTP request headers (Vercel, Railway, custom domains, local LAN IP)
+  if (request && 'headers' in request && request.headers) {
+    const forwardedProto = request.headers.get('x-forwarded-proto');
+    const forwardedHost = request.headers.get('x-forwarded-host');
+    const host = forwardedHost || request.headers.get('host');
+    if (host) {
+      const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
+      const proto = forwardedProto || (isLocal ? 'http' : 'https');
+      return `${proto}://${host}`;
+    }
+  }
+
+  // 3. Vercel deployment automatic env variable (e.g. triagesync.vercel.app)
+  if (process.env.VERCEL_URL) {
+    const vUrl = process.env.VERCEL_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    return `https://${vUrl}`;
+  }
+
+  // 4. Configured NEXT_PUBLIC_APP_URL
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+  }
+
+  // 5. Default local dev fallback
+  return 'http://localhost:3000';
+}
+
+/**
+ * Normalizes any scan URL to match the active browser origin.
+ * Transforms 'http://localhost:3000/s/tok#hash' to 'https://triagesync.vercel.app/s/tok#hash'
+ */
+export function adaptUrlToCurrentOrigin(url: string): string {
+  if (!url) return '';
+  if (typeof window === 'undefined') return url;
+  try {
+    const parsed = new URL(url, window.location.origin);
+    return `${window.location.origin}${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return url;
+  }
+}
+
 export const I18N_MEDPASS: Record<'en' | 'hi' | 'mr', MedPassTranslations> = {
   en: {
     medicalId: 'EMERGENCY MEDICAL PASS',
@@ -85,11 +138,12 @@ export function buildEmergencySmsLink(
   patientName: string,
   coords: { latitude: number; longitude: number },
   token: string,
-  appUrl: string = 'http://localhost:3000'
+  appUrl?: string
 ): string {
+  const resolvedUrl = appUrl || getBaseUrl();
   const cleanPhone = phoneNumber.replace(/[^0-9+]/g, '');
   const mapsUrl = `https://maps.google.com/?q=${coords.latitude},${coords.longitude}`;
-  const passUrl = `${appUrl}/s/${token}`;
+  const passUrl = `${resolvedUrl}/s/${token}`;
   const message = `EMERGENCY ALERT: ${patientName} is in an accident! Location: ${mapsUrl} . View MedPass: ${passUrl} . Responders have been alerted.`;
   return `sms:${cleanPhone}?body=${encodeURIComponent(message)}`;
 }
@@ -102,11 +156,12 @@ export function buildEmergencyWhatsAppLink(
   patientName: string,
   coords: { latitude: number; longitude: number },
   token: string,
-  appUrl: string = 'http://localhost:3000'
+  appUrl?: string
 ): string {
+  const resolvedUrl = appUrl || getBaseUrl();
   const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
   const mapsUrl = `https://maps.google.com/?q=${coords.latitude},${coords.longitude}`;
-  const passUrl = `${appUrl}/s/${token}`;
+  const passUrl = `${resolvedUrl}/s/${token}`;
   const message = `🚨 *EMERGENCY SOS ALERT* 🚨\n\n*Patient:* ${patientName}\n*Live GPS:* ${mapsUrl}\n*Emergency MedPass:* ${passUrl}\n\nPlease respond immediately. Dispatched to Pune Emergency Grid.`;
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
 }

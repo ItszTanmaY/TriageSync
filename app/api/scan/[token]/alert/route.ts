@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { mockStore, isSupabaseConfigured, supabase } from '@/lib/supabase/client';
-import { buildEmergencySmsLink, buildEmergencyWhatsAppLink } from '@/lib/medpass/service';
+import { buildEmergencySmsLink, buildEmergencyWhatsAppLink, getBaseUrl } from '@/lib/medpass/service';
 import { PUNE_CENTER } from '@/lib/config';
 
 export async function POST(
@@ -45,7 +45,7 @@ export async function POST(
       return NextResponse.json({ error: 'MedPass token not found or revoked' }, { status: 404 });
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getBaseUrl(request);
     const primaryContact = sample.contacts[0] || {
       name: 'Dr. Ramesh Kulkarni',
       phone: '+919822011223',

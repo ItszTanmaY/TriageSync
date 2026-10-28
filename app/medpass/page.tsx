@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
+import QRCode from 'qrcode';
 import { BloodGroup } from '@/lib/types/database';
+import { adaptUrlToCurrentOrigin } from '@/lib/medpass/service';
 
 interface ContactInput {
   name: string;
@@ -37,6 +39,34 @@ export default function MedPassPage() {
 
   const cardCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  const updateScanUrlAndQr = useCallback(async (rawUrl: string, serverQrDataUrl?: string) => {
+    const adaptedUrl = adaptUrlToCurrentOrigin(rawUrl);
+    setPublicScanUrl(adaptedUrl);
+
+    // If browser origin matches server URL and server provided QR, use it directly
+    if (serverQrDataUrl && rawUrl === adaptedUrl) {
+      setQrDataUrl(serverQrDataUrl);
+      return;
+    }
+
+    // Otherwise (e.g. running on Vercel preview/production, custom domain, or local Wi-Fi IP),
+    // re-encode QR code on client so it points to the exact active origin
+    if (adaptedUrl) {
+      try {
+        const clientQr = await QRCode.toDataURL(adaptedUrl, {
+          errorCorrectionLevel: 'M',
+          margin: 2,
+          width: 400,
+          color: { dark: '#030712', light: '#ffffff' },
+        });
+        setQrDataUrl(clientQr);
+      } catch (e) {
+        console.warn('Client QR generation warning:', e);
+        if (serverQrDataUrl) setQrDataUrl(serverQrDataUrl);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     async function fetchMedPass() {
       try {
@@ -52,9 +82,8 @@ export default function MedPassPage() {
           setMedicationsText(json.medpass.medications?.join(', ') || '');
           setOrganDonor(json.medpass.organ_donor);
           setContacts(json.contacts || []);
-          setQrDataUrl(json.qrDataUrl || '');
           setPublicToken(json.medpass.public_token);
-          setPublicScanUrl(json.publicScanUrl || '');
+          await updateScanUrlAndQr(json.publicScanUrl || '', json.qrDataUrl || '');
           setScanHistory(json.scanHistory || []);
         }
       } catch (e) {
@@ -62,7 +91,7 @@ export default function MedPassPage() {
       }
     }
     fetchMedPass();
-  }, []);
+  }, [updateScanUrlAndQr]);
 
   const handleSaveMedPass = async () => {
     setIsSaving(true);
@@ -88,9 +117,8 @@ export default function MedPassPage() {
 
       const json = await res.json();
       if (json.success) {
-        setQrDataUrl(json.qrDataUrl);
         setPublicToken(json.publicToken);
-        setPublicScanUrl(json.publicScanUrl);
+        await updateScanUrlAndQr(json.publicScanUrl, json.qrDataUrl);
         alert('MedPass updated and new cryptographic QR signed!');
       } else {
         alert('Validation error: ' + JSON.stringify(json.details || json.error));
@@ -115,8 +143,7 @@ export default function MedPassPage() {
       const json = await res.json();
       if (json.success) {
         setPublicToken(json.newToken);
-        setQrDataUrl(json.newQrDataUrl);
-        setPublicScanUrl(json.newScanUrl);
+        await updateScanUrlAndQr(json.newScanUrl, json.newQrDataUrl);
         alert(`New QR Token generated: ${json.newToken}. Old token revoked!`);
       }
     } catch (e) {
@@ -504,7 +531,7 @@ export default function MedPassPage() {
               </button>
 
               <a
-                href={publicScanUrl}
+                href={publicScanUrl || `/s/${publicToken}`}
                 target="_blank"
                 rel="noreferrer"
                 className="touch-target w-full px-4 py-3 rounded-xl bg-zinc-950 hover:bg-zinc-900 border border-white/10 text-zinc-300 font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2"

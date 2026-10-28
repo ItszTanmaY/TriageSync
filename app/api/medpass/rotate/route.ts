@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import QRCode from 'qrcode';
-import { generatePublicToken } from '@/lib/medpass/service';
+import { generatePublicToken, getBaseUrl } from '@/lib/medpass/service';
 import { signCriticalPayload } from '@/lib/qr/signer';
 import { mockStore, isSupabaseConfigured, supabase } from '@/lib/supabase/client';
 
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     sample.medpass.updated_at = new Date().toISOString();
     sample.signedPayloadB64 = signed.hashFragment;
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getBaseUrl(request);
     const newScanUrl = `${appUrl}/s/${newToken}#${signed.hashFragment}`;
 
     const newQrDataUrl = await QRCode.toDataURL(newScanUrl, {
