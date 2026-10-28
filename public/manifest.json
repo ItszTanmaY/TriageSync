@@ -1,0 +1,22 @@
+{
+  "name": "TriageSync 2.0 + MedPass",
+  "short_name": "TriageSync",
+  "description": "Emergency coordination platform, capability-aware hospital routing, and offline-first MedPass identification.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070c",
+  "theme_color": "#00f0ff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
