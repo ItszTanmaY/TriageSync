@@ -6,7 +6,6 @@ import { IncidentType, TriageLevel } from '@/lib/types/database';
 import { PUNE_CENTER } from '@/lib/config';
 import { findNearestAvailableAmbulance } from '@/lib/incident/service';
 import { MOCK_AMBULANCES } from '@/lib/supabase/mock-data';
-import { Flame, Ambulance, Navigation, ArrowRight, ShieldCheck, HeartPulse } from 'lucide-react';
 
 export default function NewIncidentPage() {
   const router = useRouter();
@@ -96,25 +95,24 @@ export default function NewIncidentPage() {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 py-2 sm:py-6">
-      {/* Header */}
-      <div className="space-y-2 border-b border-slate-200 pb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-mono font-bold tracking-wider uppercase">
-          <Flame className="w-3.5 h-3.5 animate-pulse" />
-          <span>PARAMEDIC INCIDENT DISPATCH / SEC 01</span>
+    <div className="max-w-2xl mx-auto space-y-8 py-4">
+      {/* Editorial Header */}
+      <div className="space-y-2 border-b border-white/[0.08] pb-6">
+        <div className="font-mono text-[11px] uppercase tracking-widest text-zinc-400">
+          PARAMEDIC INCIDENT DISPATCH / SEC 01
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-          Report Emergency Incident
+        <h1 className="text-3xl sm:text-4xl font-normal text-white tracking-tight">
+          Report Emergency
         </h1>
-        <p className="text-sm text-slate-600 font-normal">
-          One-handed rapid triage reporting with automatic nearest fleet assignment and hospital capability matching.
+        <p className="text-sm text-zinc-400 font-normal">
+          One-handed rapid triage reporting with automatic nearest fleet assignment.
         </p>
       </div>
 
       <div className="space-y-8">
-        {/* 1. Incident Type Selection */}
+        {/* 1. Incident Type Selection (Clean Typographic Grid) */}
         <div className="space-y-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block">
+          <label className="font-mono text-xs uppercase tracking-wider text-zinc-400 block">
             Select Condition Class
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -125,14 +123,14 @@ export default function NewIncidentPage() {
                   key={t}
                   type="button"
                   onClick={() => setType(t)}
-                  className={`min-h-[52px] p-4 rounded-2xl text-left flex items-center justify-between border transition-all ${
+                  className={`touch-target p-4 rounded-xl text-left flex items-center justify-between border transition-all ${
                     isSelected
-                      ? 'bg-sky-50 text-sky-900 border-sky-400 font-bold shadow-sm ring-1 ring-sky-400'
-                      : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                      ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.15)] font-semibold'
+                      : 'bg-zinc-950/80 text-zinc-300 border-white/[0.08] hover:border-white/20'
                   }`}
                 >
                   <span className="text-sm">{label}</span>
-                  <span className={`font-mono text-xs ${isSelected ? 'text-sky-700 font-bold' : 'text-slate-400'}`}>
+                  <span className={`font-mono text-xs ${isSelected ? 'text-zinc-600' : 'text-zinc-500'}`}>
                     {code}
                   </span>
                 </button>
@@ -143,50 +141,32 @@ export default function NewIncidentPage() {
 
         {/* 2. Triage Severity Selector */}
         <div className="space-y-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block">
-            Initial Triage Severity (START Protocol)
+          <label className="font-mono text-xs uppercase tracking-wider text-zinc-400 block">
+            Initial Triage Severity (START Framework)
           </label>
           <div className="grid grid-cols-3 gap-3">
             {[
-              {
-                level: 'red' as TriageLevel,
-                label: 'RED',
-                sub: 'Immediate',
-                activeClass: 'bg-red-50 text-red-700 border-red-500 ring-2 ring-red-400 font-black',
-                dotColor: 'bg-red-600 animate-ping',
-              },
-              {
-                level: 'yellow' as TriageLevel,
-                label: 'YELLOW',
-                sub: 'Delayed',
-                activeClass: 'bg-amber-50 text-amber-700 border-amber-500 ring-2 ring-amber-400 font-black',
-                dotColor: 'bg-amber-500',
-              },
-              {
-                level: 'green' as TriageLevel,
-                label: 'GREEN',
-                sub: 'Minor',
-                activeClass: 'bg-emerald-50 text-emerald-700 border-emerald-500 ring-2 ring-emerald-400 font-black',
-                dotColor: 'bg-emerald-500',
-              },
-            ].map(({ level, label, sub, activeClass, dotColor }) => {
+              { level: 'red' as TriageLevel, label: 'RED', sub: 'Immediate', color: 'bg-[#FF2A44]', border: 'border-[#FF2A44]' },
+              { level: 'yellow' as TriageLevel, label: 'YELLOW', sub: 'Delayed', color: 'bg-[#FFB020]', border: 'border-[#FFB020]' },
+              { level: 'green' as TriageLevel, label: 'GREEN', sub: 'Minor', color: 'bg-[#00E599]', border: 'border-[#00E599]' },
+            ].map(({ level, label, sub, color, border }) => {
               const isSelected = triage === level;
               return (
                 <button
                   key={level}
                   type="button"
                   onClick={() => setTriage(level)}
-                  className={`min-h-[58px] p-4 rounded-2xl border flex flex-col items-center justify-center text-center transition-all ${
+                  className={`touch-target p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${
                     isSelected
-                      ? activeClass
-                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      ? `bg-zinc-900 ${border} text-white ring-1 ring-white/20`
+                      : 'bg-zinc-950/60 border-white/[0.08] text-zinc-400 hover:border-white/15'
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${dotColor}`} />
-                    <span className="font-mono text-xs font-bold">{label}</span>
+                    <span className={`telemetry-pip ${color}`} />
+                    <span className="font-mono text-xs font-semibold">{label}</span>
                   </div>
-                  <span className="text-[11px] text-slate-500 mt-0.5">{sub}</span>
+                  <span className="text-[11px] text-zinc-500 mt-1">{sub}</span>
                 </button>
               );
             })}
@@ -195,98 +175,82 @@ export default function NewIncidentPage() {
 
         {/* 3. Patient Count & GPS Telemetry */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-700 block">
+          <div className="p-4 rounded-xl tactile-panel space-y-2">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block">
               Patient Count
             </span>
             <div className="flex items-center justify-between pt-1">
               <button
                 type="button"
                 onClick={() => setPatientCount(Math.max(1, patientCount - 1))}
-                className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 hover:bg-slate-200 text-slate-900 flex items-center justify-center font-mono text-xl font-bold transition-all"
-                aria-label="Decrease patient count"
+                className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
               >
                 -
               </button>
-              <span className="font-mono text-3xl font-black text-slate-900">{patientCount}</span>
+              <span className="font-mono text-3xl font-light text-white">{patientCount}</span>
               <button
                 type="button"
                 onClick={() => setPatientCount(patientCount + 1)}
-                className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 hover:bg-slate-200 text-slate-900 flex items-center justify-center font-mono text-xl font-bold transition-all"
-                aria-label="Increase patient count"
+                className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
               >
                 +
               </button>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+          <div className="p-4 rounded-xl tactile-panel space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-700 block">
-                GPS Location
+              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block">
+                GPS Coordinate
               </span>
               {isDetectingGps && (
-                <span className="font-mono text-[10px] text-sky-600 font-bold animate-pulse">
-                  Detecting GPS...
-                </span>
+                <span className="font-mono text-[10px] text-zinc-500">Detecting...</span>
               )}
             </div>
-            <div className="font-mono text-base font-bold text-slate-900 pt-2 flex items-center gap-1.5">
-              <Navigation className="w-4 h-4 text-sky-600" />
-              <span>{latitude.toFixed(4)}, {longitude.toFixed(4)}</span>
+            <div className="font-mono text-base font-normal text-white pt-2">
+              {latitude.toFixed(4)}, {longitude.toFixed(4)}
             </div>
-            <span className="text-xs text-slate-500 block font-medium">Pune Central Sector</span>
+            <span className="font-mono text-[11px] text-zinc-500 block">Pune Central Sector</span>
           </div>
         </div>
 
         {/* 4. Optional Linked MedPass Token */}
         <div className="space-y-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Link MedPass Token (Optional)</span>
+          <label className="font-mono text-xs uppercase tracking-wider text-zinc-400 block">
+            Link MedPass Token (Optional)
           </label>
           <input
             type="text"
             value={medpassToken}
             onChange={(e) => setMedpassToken(e.target.value)}
-            placeholder="tok_asha_k_9901"
-            className="w-full min-h-[48px] px-4 py-3 bg-white border border-slate-300 rounded-xl font-mono text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+            placeholder="tok_..."
+            className="touch-target w-full px-4 py-3 bg-zinc-950 border border-white/10 rounded-xl font-mono text-xs text-white focus:outline-none focus:border-white/40"
           />
         </div>
 
-        {/* Auto-suggested Ambulance */}
+        {/* Auto-suggested Ambulance (Monochrome Telemetry) */}
         {suggestedAmbulance && (
-          <div className="p-4 rounded-2xl border border-sky-200 bg-sky-50/80 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-sm">
-                <Ambulance className="w-5 h-5 animate-pulse" />
-              </div>
-              <div>
-                <span className="text-[10px] text-sky-800 uppercase font-mono font-bold block">
-                  Auto-Assigned Fleet Unit
-                </span>
-                <span className="text-slate-900 font-bold text-sm">
-                  {suggestedAmbulance.callsign} — ETA ~{suggestedAmbulance.eta} MIN
-                </span>
-              </div>
+          <div className="p-4 rounded-xl border border-white/[0.08] bg-zinc-950/40 flex items-center justify-between text-xs font-mono">
+            <div>
+              <span className="text-zinc-500 block uppercase text-[10px]">Auto-Assigned Fleet Unit</span>
+              <span className="text-white font-medium text-sm">
+                {suggestedAmbulance.callsign} — ETA ~{suggestedAmbulance.eta} MIN
+              </span>
             </div>
-            <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
-              READY
-            </span>
+            <span className="telemetry-pip bg-[#00E5FF] shadow-[0_0_6px_#00E5FF]" />
           </div>
         )}
 
         {/* Primary Action Button */}
-        <div className="pt-2">
+        <div className="pt-4">
           <button
             type="button"
             onClick={handleCreateIncident}
             disabled={isSubmitting}
-            className="w-full min-h-[54px] py-4 px-6 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-white font-bold text-sm uppercase tracking-wider transition-all shadow-xl shadow-red-600/30 active:scale-[0.98] flex items-center justify-center gap-3"
+            className="touch-target w-full py-4 px-6 rounded-xl bg-white hover:bg-zinc-200 text-black font-mono font-semibold text-xs uppercase tracking-widest transition-all shadow-[0_0_25px_rgba(255,255,255,0.2)] active:scale-[0.99] flex items-center justify-center gap-3"
           >
-            <HeartPulse className="w-5 h-5" />
             <span>{isSubmitting ? 'DISPATCHING EMERGENCY GRID...' : 'DISPATCH EMERGENCY & RESERVE HOSPITAL'}</span>
-            <ArrowRight className="w-5 h-5" />
+            <span className="font-sans font-bold text-sm">→</span>
           </button>
         </div>
       </div>

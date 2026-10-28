@@ -4,33 +4,33 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    --background: 222 47% 4%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 222 47% 7%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 222 47% 6%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 199 89% 48%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 187 100% 50%;
+    --primary-foreground: 222 47% 4%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 160 84% 39%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 152 100% 50%;
+    --accent-foreground: 222 47% 4%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 350 89% 60%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 199 89% 48%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 187 100% 50%;
 
     --radius: 0.85rem;
   }
@@ -41,18 +41,17 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-sky-500/20 selection:text-sky-900;
-    background-color: #F8FAFC;
+    @apply bg-background text-foreground antialiased selection:bg-cyan-500/25 selection:text-cyan-200;
+    background-color: #050814;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(2, 132, 199, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.04) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 60%),
-      linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-      linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.07) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 60%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
     background-attachment: fixed;
     min-height: 100vh;
-    color: #0F172A;
   }
 
   button, 
@@ -66,38 +65,21 @@
   }
 }
 
-/* Crisp Clinical Medical & Glassmorphic Classes */
-.tactile-panel {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
-}
-
-.tactile-panel-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.tactile-panel-hover:hover {
-  transform: translateY(-2px);
-  border-color: rgba(2, 132, 199, 0.4);
-  box-shadow: 0 12px 28px -6px rgba(2, 132, 199, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
-}
-
+/* Rich Awwwards Glassmorphic & Telemetry Classes */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(13, 19, 34, 0.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
 }
 
 .glass-panel-glow {
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(13, 20, 38, 0.82);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(2, 132, 199, 0.35);
-  box-shadow: 0 0 25px -4px rgba(2, 132, 199, 0.12), 0 10px 25px -5px rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  box-shadow: 0 0 35px -5px rgba(0, 240, 255, 0.15), 0 10px 30px -5px rgba(0, 0, 0, 0.6);
 }
 
 .glass-card-interactive {
@@ -105,84 +87,47 @@
 }
 .glass-card-interactive:hover {
   transform: translateY(-2px);
-  border-color: rgba(2, 132, 199, 0.5);
-  box-shadow: 0 14px 30px -6px rgba(2, 132, 199, 0.15);
+  border-color: rgba(0, 240, 255, 0.45);
+  box-shadow: 0 14px 35px -5px rgba(0, 240, 255, 0.2);
 }
 
-/* Medical Triage Badges */
 .badge-triage-red {
-  background: rgba(239, 68, 68, 0.12);
-  color: #DC2626;
-  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(244, 63, 94, 0.18);
+  color: #fda4af;
+  border: 1px solid rgba(244, 63, 94, 0.45);
 }
 
 .badge-triage-yellow {
-  background: rgba(245, 158, 11, 0.12);
-  color: #D97706;
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.18);
+  color: #fde68a;
+  border: 1px solid rgba(245, 158, 11, 0.45);
 }
 
 .badge-triage-green {
-  background: rgba(16, 185, 129, 0.12);
-  color: #059669;
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.45);
 }
 
-.badge-triage-black {
-  background: rgba(100, 116, 139, 0.12);
-  color: #475569;
-  border: 1px solid rgba(100, 116, 139, 0.35);
-}
-
-/* Telemetry Pip & Glow Indicator */
 .telemetry-pip {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 9999px;
-  flex-shrink: 0;
+  display: inline-block;
 }
 
-/* Custom Medical Scrollbars */
+/* Custom Minimalist Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: #060913;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #1e293b;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.08);
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 2.5s infinite ease-in-out;
-}
-
-@keyframes sirenFlash {
-  0%, 100% {
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(2, 132, 199, 0.7);
-  }
-}
-
-.animate-siren {
-  animation: sirenFlash 1.6s infinite ease-in-out;
+  background: #334155;
 }
