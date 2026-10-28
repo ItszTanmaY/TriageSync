@@ -24,10 +24,45 @@ import { HandoverStructuredData } from '@/lib/types/database';
 import { PreArrivalChecklistItem, generatePreArrivalChecklist } from '@/lib/voice/parser';
 import { enqueueOutboxEvent, flushOutbox } from '@/lib/offline/outbox';
 
-// Extend window for Web Speech API
+// Web Speech API TypeScript Definitions
+interface SpeechRecognitionResultItem {
+  transcript: string;
+  confidence?: number;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: {
+    [index: number]: SpeechRecognitionResultItem;
+  };
+}
+
+interface ISpeechRecognitionEvent {
+  results: SpeechRecognitionResultList;
+}
+
+interface ISpeechRecognitionErrorEvent {
+  error: string;
+  message?: string;
+}
+
+interface ISpeechRecognitionInstance {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+  onresult: ((event: ISpeechRecognitionEvent) => void) | null;
+  onerror: ((event: ISpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+}
+
+type SpeechRecognitionConstructor = new () => ISpeechRecognitionInstance;
+
 interface IWindow extends Window {
-  webkitSpeechRecognition?: any;
-  SpeechRecognition?: any;
+  webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  SpeechRecognition?: SpeechRecognitionConstructor;
 }
 
 interface VoiceHandoverConsoleProps {
@@ -95,7 +130,7 @@ export function VoiceHandoverConsole({
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<ISpeechRecognitionInstance | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize Speech Recognition
@@ -110,7 +145,7 @@ export function VoiceHandoverConsole({
         recognition.lang =
           selectedLang === 'hi' ? 'hi-IN' : selectedLang === 'mr' ? 'mr-IN' : 'en-IN';
 
-        recognition.onresult = (event: any) => {
+        recognition.onresult = (event: ISpeechRecognitionEvent) => {
           let currentTranscript = '';
           for (let i = 0; i < event.results.length; i++) {
             currentTranscript += event.results[i][0].transcript + ' ';
@@ -118,7 +153,7 @@ export function VoiceHandoverConsole({
           setTranscript(currentTranscript.trim());
         };
 
-        recognition.onerror = (event: any) => {
+        recognition.onerror = (event: ISpeechRecognitionErrorEvent) => {
           console.warn('Speech recognition error:', event.error);
           setIsRecording(false);
         };

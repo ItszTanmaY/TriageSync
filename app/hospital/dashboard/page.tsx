@@ -352,6 +352,7 @@ export default function HospitalDashboardPage() {
                     <button
                       type="button"
                       onClick={() => updateResourceField('icu_free', -1)}
+                      aria-label="Decrease ICU beds"
                       className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
                     >
                       -
@@ -360,6 +361,7 @@ export default function HospitalDashboardPage() {
                     <button
                       type="button"
                       onClick={() => updateResourceField('icu_free', 1)}
+                      aria-label="Increase ICU beds"
                       className="touch-target w-12 h-12 rounded-lg bg-white text-black hover:bg-zinc-200 flex items-center justify-center font-mono text-lg font-bold"
                     >
                       +
@@ -377,6 +379,7 @@ export default function HospitalDashboardPage() {
                     <button
                       type="button"
                       onClick={() => updateResourceField('er_free', -1)}
+                      aria-label="Decrease Emergency beds"
                       className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
                     >
                       -
@@ -385,6 +388,7 @@ export default function HospitalDashboardPage() {
                     <button
                       type="button"
                       onClick={() => updateResourceField('er_free', 1)}
+                      aria-label="Increase Emergency beds"
                       className="touch-target w-12 h-12 rounded-lg bg-white text-black hover:bg-zinc-200 flex items-center justify-center font-mono text-lg font-bold"
                     >
                       +
@@ -406,6 +410,7 @@ export default function HospitalDashboardPage() {
                     <button
                       type="button"
                       onClick={() => updateResourceField('trauma_bay_free', -1)}
+                      aria-label="Decrease Trauma bays"
                       className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
                     >
                       -
@@ -414,6 +419,7 @@ export default function HospitalDashboardPage() {
                     <button
                       type="button"
                       onClick={() => updateResourceField('trauma_bay_free', 1)}
+                      aria-label="Increase Trauma bays"
                       className="touch-target w-12 h-12 rounded-lg bg-white text-black hover:bg-zinc-200 flex items-center justify-center font-mono text-lg font-bold"
                     >
                       +
@@ -431,6 +437,7 @@ export default function HospitalDashboardPage() {
                     <button
                       type="button"
                       onClick={() => updateResourceField('ventilators_free', -1)}
+                      aria-label="Decrease Ventilators"
                       className="touch-target w-12 h-12 rounded-lg bg-zinc-900 border border-white/10 hover:border-white/25 text-white flex items-center justify-center font-mono text-lg"
                     >
                       -
@@ -439,6 +446,7 @@ export default function HospitalDashboardPage() {
                     <button
                       type="button"
                       onClick={() => updateResourceField('ventilators_free', 1)}
+                      aria-label="Increase Ventilators"
                       className="touch-target w-12 h-12 rounded-lg bg-white text-black hover:bg-zinc-200 flex items-center justify-center font-mono text-lg font-bold"
                     >
                       +
